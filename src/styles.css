@@ -1,0 +1,53 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Website title */
+  h1 {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  /* Song list */
+  .song-list {
+    position: absolute;
+    top: 100px;
+    left: 20px;
+    width: 200px;
+  }
+  
+  .song-list ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .song-list li {
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin-bottom: 5px;
+    cursor: pointer;
+  }
+  
+  .song-list li:hover {
+    background-color: #f0f0f0;
+  }
+  
+  /* Song details */
+  .song-details {
+    margin-left: 250px;
+    padding: 20px;
+  }
+  
+  .song-details h2, .song-details h3 {
+    margin: 0 0 10px 0;
+  }
+  
+  .song-details p {
+    column-count: 2;
+    column-gap: 20px;
+    line-height: 1.5;
+  }
+  

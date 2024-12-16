@@ -4,7 +4,7 @@ const SongDetails = ({ song }) => {
   if (!song) return <p>Select a song to view the lyrics.</p>;
 
   return (
-    <div>
+    <div className="song-details">
       <h2>{song.title}</h2>
       <h3>By {song.artist}</h3>
       <p>{song.lyrics}</p>
