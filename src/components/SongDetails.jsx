@@ -15,11 +15,15 @@ const SongDetails = ({ song }) => {
                 {line.trim() === "" ? <br /> : line} {/* Handle empty lines */}
               </p>
             ))
-          : song.lyrics.map((line, index) => (
-              <p key={index}>
-                {line.trim() === "" ? <br /> : line} {/* Handle empty lines */}
-              </p>
-            ))}
+          : song.lyrics.map((line, index) =>
+              line.trim() === "" ? (
+                /* If the line is empty, render a short horizontal separator */
+                <hr className="paragraph-separator" key={index} />
+              ) : (
+                /* Otherwise, render the lyric line in a <p> tag */
+                <p key={index}>{line}</p>
+              )
+            )}
       </div>
     </div>
   );

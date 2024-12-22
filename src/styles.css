@@ -75,8 +75,7 @@ h1 {
 }
 
 .song-details p {
-  column-count: 2;
-  column-gap: 20px;
+  column-gap: 0;
   line-height: 1.5;
 }
 .lyrics p {
@@ -127,17 +126,23 @@ h1 {
   background-color: #0056b3;
 }
 .song-lyrics {
-  column-count: 2; /* Enable two-column layout */
-  column-gap: 20px; /* Adjust gap between columns */
   line-height: 1.5; /* Consistent line height */
   white-space: pre-wrap; /* Preserve original spaces and line breaks */
-  text-align: left; /* Align text to the left */
+  margin: 0;
 }
 
 .song-lyrics p {
-  margin: 0; /* Remove extra margins */
+  margin: 0.5rem 0;
 }
 
 .song-lyrics p:empty {
   margin: 10px 0; /* Extra spacing for empty lines */
+}
+
+.paragraph-separator {
+  margin: 1rem 0; /* Spacing above/below the line */
+  width: 50px; /* Short horizontal line */
+  border: 0;
+  border-top: 2px solid #333;
+  /* You can style this line as you wish (color, thickness, etc.) */
 }
