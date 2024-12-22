@@ -2,7 +2,6 @@ import React from "react";
 
 const SongDetails = ({ song }) => {
   if (!song) return <p>Select a song to view the lyrics.</p>;
-  console.log("song lyric console log: ", typeof song.lyrics);
   return (
     <div className="song-details">
       <h2>
