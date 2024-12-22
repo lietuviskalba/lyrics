@@ -1,19 +1,25 @@
 import React, { useState } from "react";
 
-const AdminPage = () => {
-  const [title, setTitle] = useState("");
-  const [artist, setArtist] = useState("");
-  const [lyrics, setLyrics] = useState("");
+function AdminPage() {
+  const [textInput, setTextInput] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleAddSong = async () => {
-    const newSong = {
-      id: Date.now(),
-      title,
-      artist,
-      lyrics: lyrics.split("\n"), // Convert formatted text to an array of lines
-    };
+    // Split the text input into lines
+    const lines = textInput.split("\n");
+    if (lines.length < 3) {
+      alert("Please provide at least three lines: Title, Artist, and Lyrics.");
+      return;
+    }
 
-    // Save to JSON file (simulated for now)
+    // Extract title, artist, and lyrics
+    const title = lines[0].trim(); // First line
+    const artist = lines[1].trim(); // Second line
+    const lyrics = lines.slice(2); // Remaining lines as an array
+
+    // Create the new song object
+    const newSong = { title, artist, lyrics };
+
     try {
       const response = await fetch("http://localhost:5000/api/save-song", {
         method: "POST",
@@ -22,12 +28,10 @@ const AdminPage = () => {
       });
 
       if (response.ok) {
-        alert("Song added successfully!");
-        setTitle("");
-        setArtist("");
-        setLyrics("");
+        setSuccessMessage("Song added successfully!");
+        setTextInput(""); // Clear input after success
       } else {
-        alert("Failed to add song.");
+        alert("Failed to add the song. Please try again.");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -36,39 +40,20 @@ const AdminPage = () => {
   };
 
   return (
-    <div className="admin-page">
-      <h2>Add New Song</h2>
-      <form onSubmit={(e) => e.preventDefault()}>
-        <label>
-          Song Title:
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </label>
-        <label>
-          Artist:
-          <input
-            type="text"
-            value={artist}
-            onChange={(e) => setArtist(e.target.value)}
-          />
-        </label>
-        <label>
-          Lyrics:
-          <textarea
-            value={lyrics}
-            onChange={(e) => setLyrics(e.target.value)}
-            rows="10"
-          />
-        </label>
-        <button type="button" onClick={handleAddSong}>
-          Add Song
-        </button>
-      </form>
+    <div>
+      <h1>Admin Page</h1>
+      <textarea
+        rows="10"
+        cols="50"
+        value={textInput}
+        onChange={(e) => setTextInput(e.target.value)}
+        placeholder="First line: Title, Second line: Artist, Remaining lines: Lyrics"
+      ></textarea>
+      <br />
+      <button onClick={handleAddSong}>Add Song</button>
+      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
     </div>
   );
-};
+}
 
 export default AdminPage;

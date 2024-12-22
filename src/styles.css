@@ -126,3 +126,18 @@ h1 {
 .admin-page button:hover {
   background-color: #0056b3;
 }
+.song-lyrics {
+  column-count: 2; /* Enable two-column layout */
+  column-gap: 20px; /* Adjust gap between columns */
+  line-height: 1.5; /* Consistent line height */
+  white-space: pre-wrap; /* Preserve original spaces and line breaks */
+  text-align: left; /* Align text to the left */
+}
+
+.song-lyrics p {
+  margin: 0; /* Remove extra margins */
+}
+
+.song-lyrics p:empty {
+  margin: 10px 0; /* Extra spacing for empty lines */
+}

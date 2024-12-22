@@ -1,11 +1,11 @@
-import React from 'react';
+import React from "react";
 
 const SongList = ({ songs, onSelect }) => {
   return (
     <ul className="song-list">
-      {songs.map(song => (
-        <li key={song.id} onClick={() => onSelect(song)}>
-          <strong>{song.title}</strong> - {song.artist}
+      {songs.map((song, index) => (
+        <li key={index} onClick={() => onSelect(song)}>
+          {song.title} - {song.artist}
         </li>
       ))}
     </ul>
