@@ -8,7 +8,6 @@ const SongPage = () => {
 
   return (
     <div>
-      <h1>Lyric Website</h1>
       <SongList songs={songs} onSelect={setSelectedSong} />
       <SongDetails song={selectedSong} />
     </div>

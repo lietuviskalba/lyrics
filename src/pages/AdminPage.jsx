@@ -6,11 +6,9 @@ function AdminPage() {
   const [successMessage, setSuccessMessage] = useState("");
   const [error, setError] = useState("");
 
-  // Fetch all songs (similar to how you load them in SongPage)
+  // Fetch all songs
   useEffect(() => {
-    // If you’re storing songs in the same JSON file, you can fetch them from an endpoint
-    // Or simply import them like import songsData from '../data/songs.json';
-    fetch("http://localhost:5000/api/songs") // This route must exist if you want to fetch all songs
+    fetch("http://localhost:5000/api/songs")
       .then((res) => res.json())
       .then((data) => setSongs(data))
       .catch((err) => console.error("Error fetching songs:", err));
@@ -35,21 +33,66 @@ function AdminPage() {
   };
 
   const handleAddSong = async () => {
-    // Split the text input into lines
-    const lines = textInput.split("\n");
-    if (lines.length < 3) {
-      alert("Please provide at least three lines: Title, Artist, and Lyrics.");
+    // Split the textarea input by newline
+    let lines = textInput.split("\n").map((line) => line.trimEnd());
+
+    // 1. Remove all leading empty lines
+    //    Find the first non-empty line, slice from there
+    const firstNonEmptyIndex = lines.findIndex((line) => line.trim() !== "");
+    if (firstNonEmptyIndex > 0) {
+      lines = lines.slice(firstNonEmptyIndex);
+    }
+
+    // 2. Ensure we have at least 2 lines for Title + Artist
+    if (lines.length < 2) {
+      alert(
+        "Please provide at least a title on the first line, and artist on the second line."
+      );
       return;
     }
 
-    // Extract title, artist, and lyrics
-    const title = lines[0].trim(); // First line
-    const artist = lines[1].trim(); // Second line
-    const lyrics = lines.slice(2); // Remaining lines as an array
+    // 3. Extract Title and Artist
+    const title = lines[0].trim() || "Untitled";
+    const artist = lines[1].trim() || "Unknown";
 
-    // Create the new song object
-    const newSong = { id: Date.now(), title, artist, lyrics };
+    // 4. Grab the rest of the lines as potential lyrics
+    let rawLyrics = lines.slice(2);
 
+    // 5. Remove trailing empty lines at the end (optional)
+    while (
+      rawLyrics.length > 0 &&
+      rawLyrics[rawLyrics.length - 1].trim() === ""
+    ) {
+      rawLyrics.pop();
+    }
+
+    // 6. Collapse consecutive empty lines into a single one
+    //    This ensures only one blank line between stanzas
+    const lyrics = [];
+    for (let i = 0; i < rawLyrics.length; i++) {
+      const line = rawLyrics[i];
+      if (line.trim() === "") {
+        // If this is an empty line, check if the last line in `lyrics` is also empty
+        if (lyrics.length === 0 || lyrics[lyrics.length - 1].trim() === "") {
+          // Skip adding another blank line
+          continue;
+        }
+        // Otherwise, add a blank line
+        lyrics.push("");
+      } else {
+        lyrics.push(line);
+      }
+    }
+
+    // 7. Build the song object
+    const newSong = {
+      id: Date.now(),
+      title,
+      artist,
+      lyrics,
+    };
+
+    // 8. Make the POST request to your server
     try {
       const response = await fetch("http://localhost:5000/api/save-song", {
         method: "POST",
@@ -59,7 +102,7 @@ function AdminPage() {
 
       if (response.ok) {
         setSuccessMessage("Song added successfully!");
-        setTextInput(""); // Clear input after success
+        setTextInput(""); // Clear input
       } else {
         alert("Failed to add the song. Please try again.");
       }
