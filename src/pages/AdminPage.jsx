@@ -103,6 +103,10 @@ function AdminPage() {
       if (response.ok) {
         setSuccessMessage("Song added successfully!");
         setTextInput(""); // Clear input
+        const updatedSongs = await fetch(
+          "http://localhost:5000/api/songs"
+        ).then((res) => res.json());
+        setSongs(updatedSongs);
       } else {
         alert("Failed to add the song. Please try again.");
       }

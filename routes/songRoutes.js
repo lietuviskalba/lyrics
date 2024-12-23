@@ -10,7 +10,8 @@ router.get("/songs", (req, res) => {
       console.error(err);
       return res.status(500).send("Error reading file.");
     }
-    const songs = JSON.parse(data);
+    let songs = JSON.parse(data);
+    songs.sort((a, b) => b.id - a.id);
     res.json(songs);
   });
 });
@@ -26,6 +27,9 @@ router.post("/save-song", (req, res) => {
 
     const songs = JSON.parse(data);
     songs.push(newSong);
+
+    // Sort by id descending (newest first)
+    songs.sort((a, b) => b.id - a.id);
 
     fs.writeFile(filePath, JSON.stringify(songs, null, 2), (err) => {
       if (err) {
