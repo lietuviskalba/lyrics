@@ -11,7 +11,7 @@ app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
 
 app.use("/api", songRoutes);
-console.log(app._router.stack);
+//console.log(app._router.stack);
 
 const PORT = 5000;
 app.listen(PORT, () =>

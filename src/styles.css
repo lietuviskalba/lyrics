@@ -91,6 +91,13 @@ body {
   min-width: 400px; /* Enough width so text doesn't wrap too soon */
 }
 
+.admin-song-list small {
+  font-size: 12px;
+  color: #666;
+  display: block; /* Forces it to appear on a new line */
+  margin-top: 5px; /* Adds a little space above the date */
+}
+
 /* We'll handle numbering manually with (index + 1) in JSX */
 .admin-song-list ol {
   list-style-type: none;

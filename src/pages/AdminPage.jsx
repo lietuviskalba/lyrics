@@ -54,6 +54,18 @@ function AdminPage() {
     // 3. Extract Title and Artist
     const title = lines[0].trim() || "Untitled";
     const artist = lines[1].trim() || "Unknown";
+    const id = Date.now();
+
+    // Utility to format date
+    const formatDate = (timestamp) => {
+      const date = new Date(timestamp);
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+      const dd = String(date.getDate()).padStart(2, "0");
+      const hh = String(date.getHours()).padStart(2, "0");
+      const min = String(date.getMinutes()).padStart(2, "0");
+      return `${yyyy}/${mm}/${dd}-${hh}:${min}`;
+    };
 
     // 4. Grab the rest of the lines as potential lyrics
     let rawLyrics = lines.slice(2);
@@ -86,10 +98,11 @@ function AdminPage() {
 
     // 7. Build the song object
     const newSong = {
-      id: Date.now(),
+      id,
       title,
       artist,
       lyrics,
+      date_lyrics_added: formatDate(id),
     };
 
     // 8. Make the POST request to your server
@@ -152,6 +165,7 @@ function AdminPage() {
                   Delete
                 </button>{" "}
                 {song.title} - {song.artist}
+                <small>Added: {song.date_lyrics_added}</small>
               </li>
             ))}
           </ol>
