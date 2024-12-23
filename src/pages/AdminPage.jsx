@@ -114,33 +114,45 @@ function AdminPage() {
 
   return (
     <div className="admin-page">
-      <h1>Admin Page</h1>
-      {error && <p style={{ color: "red" }}>Error: {error}</p>}
+      {/* Top-left corner title */}
+      <h1 className="admin-title">Admin Page</h1>
 
-      <h3>Song List</h3>
-      <ul>
-        {songs.map((song) => (
-          <li key={song.id} style={{ marginBottom: "10px" }}>
-            <strong>{song.title}</strong> - {song.artist}
-            <button
-              style={{ marginLeft: "10px" }}
-              onClick={() => handleDeleteSong(song.id)}
-            >
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
-      <textarea
-        rows="10"
-        cols="50"
-        value={textInput}
-        onChange={(e) => setTextInput(e.target.value)}
-        placeholder="First line: Title, Second line: Artist, Remaining lines: Lyrics"
-      ></textarea>
-      <br />
-      <button onClick={handleAddSong}>Add Song</button>
+      {error && <p style={{ color: "red" }}>Error: {error}</p>}
       {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+
+      <div className="admin-container">
+        {/* Left Section: Add Song */}
+        <div className="admin-add-song">
+          <h2>Add Song</h2>
+          <textarea
+            rows="10"
+            cols="50"
+            value={textInput}
+            onChange={(e) => setTextInput(e.target.value)}
+            placeholder="First line: Title, second line: Artist, remainder: Lyrics"
+          />
+          <br />
+          <button onClick={handleAddSong}>Add Song</button>
+        </div>
+
+        {/* Right Section: List of Songs */}
+        <div className="admin-song-list">
+          <h2>
+            List of Songs (<span>{songs.length}</span>)
+          </h2>
+          <ol>
+            {songs.map((song, index) => (
+              <li key={song.id}>
+                {index + 1}.{" "}
+                <button onClick={() => handleDeleteSong(song.id)}>
+                  Delete
+                </button>{" "}
+                {song.title} - {song.artist}
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
     </div>
   );
 }
