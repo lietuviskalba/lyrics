@@ -1,0 +1,38 @@
+/* lyricPage.css */
+
+.lyric-page {
+  margin: 20px;
+  margin-top: 50px;
+  font-family: Arial, sans-serif;
+}
+
+.lyric-page h2 {
+  font-size: 24px; /* Adjust as needed */
+  margin-bottom: 5px;
+}
+
+.lyric-page h3 {
+  font-size: 18px; /* Adjust as needed */
+  margin-bottom: 15px;
+}
+
+.lyrics {
+  font-size: 16px; /* Adjust as needed */
+  line-height: 1.5;
+}
+
+.stanza p {
+  margin: 0.5rem 0;
+}
+
+.stanza-separator {
+  margin: 1rem 0;
+  border: 0;
+  border-top: 1px solid #ccc;
+}
+
+.date-added {
+  margin-top: 15px;
+  font-size: 12px;
+  color: #666;
+}

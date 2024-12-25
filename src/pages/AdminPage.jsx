@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import "../styles/adminPage.css";
 
 function AdminPage() {
   const [songs, setSongs] = useState([]);
@@ -160,12 +161,15 @@ function AdminPage() {
           <ol>
             {songs.map((song, index) => (
               <li key={song.id}>
-                {index + 1}.{" "}
-                <button onClick={() => handleDeleteSong(song.id)}>
-                  Delete
-                </button>{" "}
-                {song.title} - {song.artist}
-                <small>Added: {song.date_lyrics_added}</small>
+                <div className="song-info">
+                  <button onClick={() => handleDeleteSong(song.id)}>
+                    Delete
+                  </button>
+                  <span>
+                    {song.title} - {song.artist}
+                  </span>
+                </div>
+                <small>Added on: {song.date_lyrics_added}</small>
               </li>
             ))}
           </ol>

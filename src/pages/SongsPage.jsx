@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import "../styles/songsPage.css";
 
 const SongsPage = () => {
   const [songs, setSongs] = useState([]);
@@ -15,7 +16,7 @@ const SongsPage = () => {
 
   // Handle song click
   const handleSongClick = (song) => {
-    navigate("/", { state: { selectedSong: song } }); // Pass selected song to the Lyrics page
+    navigate("/lyrics", { state: { selectedSong: song } }); // Updated route to /lyrics
   };
 
   return (
