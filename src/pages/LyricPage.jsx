@@ -1,5 +1,7 @@
+// LyricPage.jsx
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { FaColumns, FaList } from "react-icons/fa";
 import "../styles/lyricPage.css";
 
 const LyricPage = () => {
@@ -7,6 +9,37 @@ const LyricPage = () => {
   const [selectedSong, setSelectedSong] = useState(
     location.state?.selectedSong || null
   );
+
+  // Initialize columnCount and textSize with localStorage or defaults
+  const [columnCount, setColumnCount] = useState(() => {
+    const saved = localStorage.getItem("columnCount");
+    return saved ? parseInt(saved, 10) : 1;
+  });
+
+  const [textSize, setTextSize] = useState(() => {
+    const saved = localStorage.getItem("textSize");
+    return saved ? parseInt(saved, 10) : 16;
+  });
+
+  // Persist columnCount to localStorage
+  useEffect(() => {
+    localStorage.setItem("columnCount", columnCount);
+  }, [columnCount]);
+
+  // Persist textSize to localStorage
+  useEffect(() => {
+    localStorage.setItem("textSize", textSize);
+  }, [textSize]);
+
+  // Handler to toggle column count
+  const toggleColumns = () => {
+    setColumnCount((prevCount) => (prevCount === 1 ? 2 : 1));
+  };
+
+  // Handler to adjust text size
+  const handleTextSizeChange = (e) => {
+    setTextSize(e.target.value);
+  };
 
   // Fetch the song details if no song is selected
   useEffect(() => {
@@ -58,9 +91,44 @@ const LyricPage = () => {
 
   return (
     <div className="lyric-page">
-      <h2>{selectedSong.title}</h2>
-      <h3>{selectedSong.artist}</h3>
-      <div className="lyrics">{renderLyrics(selectedSong.lyrics)}</div>
+      <div className="lyric-page-header">
+        <div>
+          <h2>{selectedSong.title}</h2>
+          <h3>{selectedSong.artist}</h3>
+        </div>
+        <div className="lyric-page-controls">
+          {/* Column Toggle Button */}
+          <button
+            onClick={toggleColumns}
+            className="control-button"
+            title="Toggle Columns"
+            aria-label="Toggle between single and double column layout"
+          >
+            {columnCount === 1 ? <FaColumns /> : <FaList />}
+          </button>
+
+          {/* Text Size Slider */}
+          <div className="text-size-control">
+            <label htmlFor="text-size-slider">Text Size</label>
+            <input
+              type="range"
+              id="text-size-slider"
+              min="12"
+              max="24"
+              value={textSize}
+              onChange={handleTextSizeChange}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div
+        className={`lyrics columns-${columnCount}`}
+        style={{ fontSize: `${textSize}px` }}
+      >
+        {renderLyrics(selectedSong.lyrics)}
+      </div>
+
       <p className="date-added">Added on: {selectedSong.date_lyrics_added}</p>
     </div>
   );
