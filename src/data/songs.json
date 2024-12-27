@@ -6,7 +6,8 @@
     "lyrics": [
       "clone"
     ],
-    "date_lyrics_added": "2024/12/27-19:07"
+    "date_lyrics_added": "2024/12/27-19:07",
+    "count": 2
   },
   {
     "id": 1735165531760,
@@ -95,7 +96,8 @@
       "You ain't nothin' when you tryna be slick",
       "You ain't nothin' but my houndin' ass bitch, bitch"
     ],
-    "date_lyrics_added": "2024/12/26-00:25"
+    "date_lyrics_added": "2024/12/26-00:25",
+    "count": 1
   },
   {
     "id": 1734974466842,
@@ -137,73 +139,7 @@
       "It ain't me, it ain't me",
       "I ain't no fortunate one"
     ],
-    "date_lyrics_added": "2024/12/23-19:21"
-  },
-  {
-    "id": 1734472152480,
-    "title": "Waiting Around to Die",
-    "artist": " The Be Good Tanyas",
-    "lyrics": [
-      "Sometimes I don't know where",
-      "This dirty road is taking me",
-      "Sometimes I don't even know the reason why",
-      "But I guess I keep a-gamblin'",
-      "Lots of booze and lots of ramblin'",
-      "Well it's easier than just a-waitin' around to die",
-      "",
-      "One time, friends, I had a ma",
-      "I even had a pa",
-      "Well he beat her with a belt once 'cause she cried",
-      "She told him to take care of me",
-      "Headed down to Tennessee",
-      "Well it's easier than just a-waitin' around to die",
-      "",
-      "Well I came of age and I found a girl in a Tuscaloosa bar",
-      "She cleaned me out and hit in on the sly",
-      "I tried to hide the pain, I bought some wine and hopped a train",
-      "Well it's easier than just waitin' around to die",
-      "",
-      "A friend said he knew",
-      "Where some easy money was",
-      "We robbed a man, and brother did we fly",
-      "The posse caught up with me",
-      "And drug me back to Muskogee",
-      "Two long years waitin' around to die",
-      "",
-      "Well, now I'm out of prison",
-      "I got me a friend at last",
-      "Well he don't drink or steal or cheat or lie",
-      "His name's codeine",
-      "He's the nicest thing I've seen",
-      "Yah, together we're gonna wait around and die",
-      "Yah together we're gonna wait around and die",
-      ""
-    ]
-  },
-  {
-    "id": 3,
-    "title": "The Exodus Song",
-    "artist": "Pat Boone",
-    "lyrics": [
-      "This land is mine, God gave this land to me",
-      "This brave and ancient land to me",
-      "",
-      "And when the morning sun reveals her hills and plain",
-      "Then I see a land where children can run free.",
-      "",
-      "So take my hand and walk this land with me",
-      "And walk this lovely land with me",
-      "",
-      "Though I am just a man, when you are by my side",
-      "With the help of God, I know I can be strong.",
-      "",
-      "Though I am just a man, when you are by my side",
-      "With the help of God, I know I can be strong",
-      "",
-      "To make this land our home",
-      "If I must fight, I'll fight to make this land our own",
-      "",
-      "Until I die, this land is mine."
-    ]
+    "date_lyrics_added": "2024/12/23-19:21",
+    "count": 2
   }
 ]

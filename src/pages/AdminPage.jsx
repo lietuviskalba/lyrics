@@ -169,7 +169,9 @@ function AdminPage() {
                     {song.title} - {song.artist}
                   </span>
                 </div>
-                <small>Added on: {song.date_lyrics_added}</small>
+                <small>
+                  Added on: {song.date_lyrics_added}; Count: {song.count}
+                </small>
               </li>
             ))}
           </ol>

@@ -11,6 +11,19 @@
   margin-bottom: 20px;
 }
 
+.search-bar {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.search-bar input {
+  width: 50%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
 .song-list {
   list-style: none; /* Remove default bullets */
   padding: 0;
@@ -32,4 +45,16 @@
 .song-item:hover {
   background-color: #727272; /* Darker grey on hover */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Subtle glow effect */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .search-bar input {
+    width: 80%;
+  }
+
+  .song-item {
+    flex: 1 1 100%;
+    max-width: none;
+  }
 }

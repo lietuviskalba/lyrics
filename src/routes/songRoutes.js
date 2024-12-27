@@ -11,13 +11,10 @@ const __dirname = path.dirname(__filename);
 const router = Router();
 const filePath = path.join(__dirname, "../data/songs.json"); // Adjust the path as needed
 
-console.log("Resolved songs.json path:", filePath); // Log the file path
-
 // Utility functions
 const readSongs = async () => {
   try {
-    const data = await fs.readFile(filePath, "utf8");
-    console.log("Successfully read songs.json");
+    const data = await fs.readFile(filePath, "utf-8");
     return JSON.parse(data);
   } catch (err) {
     console.error("Error reading songs.json:", err);
@@ -27,8 +24,7 @@ const readSongs = async () => {
 
 const writeSongs = async (songs) => {
   try {
-    await fs.writeFile(filePath, JSON.stringify(songs, null, 2), "utf8");
-    console.log("Successfully wrote to songs.json");
+    await fs.writeFile(filePath, JSON.stringify(songs, null, 2), "utf-8");
   } catch (err) {
     console.error("Error writing to songs.json:", err);
     throw err;
@@ -43,7 +39,6 @@ router.get("/songs", async (req, res) => {
     songs.sort((a, b) => b.id - a.id);
     res.json(songs);
   } catch (err) {
-    console.error("Error in GET /songs:", err);
     res.status(500).json({ message: "Error reading songs data" });
   }
 });
@@ -60,7 +55,6 @@ router.get("/songs/:id", async (req, res) => {
       res.status(404).json({ message: "Song not found" });
     }
   } catch (err) {
-    console.error("Error in GET /songs/:id:", err);
     res.status(500).json({ message: "Error reading songs data" });
   }
 });
@@ -68,7 +62,6 @@ router.get("/songs/:id", async (req, res) => {
 // POST save-song
 router.post("/save-song", async (req, res) => {
   const newSong = req.body;
-  console.log("Received new song:", newSong);
 
   try {
     const songs = await readSongs();
@@ -78,7 +71,6 @@ router.post("/save-song", async (req, res) => {
     await writeSongs(songs);
     res.status(200).send("Song saved successfully!");
   } catch (err) {
-    console.error("Error in POST /save-song:", err);
     res.status(500).send("Error saving song.");
   }
 });
@@ -86,32 +78,27 @@ router.post("/save-song", async (req, res) => {
 // DELETE a song
 router.delete("/songs/:id", async (req, res) => {
   const songId = parseInt(req.params.id, 10);
-  console.log(`Received request to delete song with ID: ${songId}`);
 
   try {
     const songs = await readSongs();
     const updatedSongs = songs.filter((song) => song.id !== songId);
 
     if (updatedSongs.length === songs.length) {
-      console.log("Song not found for deletion.");
       return res.status(404).send("Song not found.");
     }
 
     await writeSongs(updatedSongs);
     res.status(200).send("Song deleted successfully!");
   } catch (err) {
-    console.error("Error in DELETE /songs/:id:", err);
     res.status(500).send("Error deleting song.");
   }
 });
 
 // POST increment count for a song
 router.post("/songs/:id/increment", async (req, res) => {
-  const songId = parseInt(req.params.id, 10);
-  console.log(`Received request to increment count for song ID: ${songId}`);
-
   try {
     const songs = await readSongs();
+    const songId = parseInt(req.params.id, 10);
     const songIndex = songs.findIndex((s) => s.id === songId);
     if (songIndex !== -1) {
       // Ensure the 'count' property exists and is a number
@@ -121,16 +108,12 @@ router.post("/songs/:id/increment", async (req, res) => {
         songs[songIndex].count = 1; // Initialize if undefined or not a number
       }
       await writeSongs(songs);
-      console.log(
-        `Count incremented for song ID: ${songId}, new count: ${songs[songIndex].count}`
-      );
       res.json({ message: "Count incremented", count: songs[songIndex].count });
     } else {
-      console.log("Song not found for increment.");
       res.status(404).json({ message: "Song not found" });
     }
   } catch (err) {
-    console.error("Error in POST /songs/:id/increment:", err);
+    console.error("Error incrementing song count:", err);
     res.status(500).json({ message: "Error updating song count" });
   }
 });
