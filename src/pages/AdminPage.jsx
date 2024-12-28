@@ -14,7 +14,10 @@ import {
   PasteInstruction,
   AddSongButton,
   AdminSongList,
+  SongListTitleWrapper, // Import SongListTitleWrapper
   SongListTitle,
+  SearchBar, // Import SearchBar
+  SearchInput, // Import SearchInput
   SongList,
   SongItem,
   SongMain,
@@ -33,6 +36,9 @@ function AdminPage() {
   const [successMessage, setSuccessMessage] = useState("");
   const [error, setError] = useState("");
   const [editingSongId, setEditingSongId] = useState(null); // New State for Editing
+
+  // Search term state
+  const [adminSearchTerm, setAdminSearchTerm] = useState("");
 
   // Image-related states
   const [imageFile, setImageFile] = useState(null);
@@ -415,6 +421,15 @@ function AdminPage() {
     window.location.href = `/lyrics/${song.id}`;
   };
 
+  // Filter songs based on search term (title or artist)
+  const filteredSongs = songs.filter((song) => {
+    const lowerSearchTerm = adminSearchTerm.toLowerCase();
+    return (
+      song.title.toLowerCase().includes(lowerSearchTerm) ||
+      song.artist.toLowerCase().includes(lowerSearchTerm)
+    );
+  });
+
   return (
     <AdminPageContainer onPaste={handlePaste}>
       {/* Top-left corner title */}
@@ -504,11 +519,22 @@ function AdminPage() {
 
         {/* Right Section: List of Songs */}
         <AdminSongList>
-          <SongListTitle>
-            List of Songs (<span>{songs.length}</span>)
-          </SongListTitle>
+          <SongListTitleWrapper>
+            <SongListTitle>
+              List of Songs (<span>{songs.length}</span>)
+            </SongListTitle>
+            <SearchBar>
+              <SearchInput
+                type="text"
+                placeholder="Search songs or artists..."
+                value={adminSearchTerm}
+                onChange={(e) => setAdminSearchTerm(e.target.value)}
+                aria-label="Search songs by name or artist"
+              />
+            </SearchBar>
+          </SongListTitleWrapper>
           <SongList>
-            {songs.map((song) => (
+            {filteredSongs.map((song) => (
               <SongItem
                 key={song.id}
                 onClick={() => handleSongClick(song)}

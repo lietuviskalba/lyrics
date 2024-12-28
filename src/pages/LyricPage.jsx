@@ -1,13 +1,14 @@
 // src/pages/LyricPage.jsx
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { FaColumns, FaList } from "react-icons/fa";
+import { FaColumns, FaList, FaRandom } from "react-icons/fa"; // Import FaRandom
 import {
   LyricPageContainer,
   LyricPageHeader,
   SongDetails,
   LyricPageControls,
   ControlButton,
+  RandomButton, // Import RandomButton
   TextSizeControl,
   TextSizeLabel,
   TextSizeSlider,
@@ -23,6 +24,7 @@ const LyricPage = () => {
   const [selectedSong, setSelectedSong] = useState(
     location.state?.selectedSong || null
   );
+  const [songs, setSongs] = useState([]); // New state for songs list
 
   // Initialize columnCount and textSize with localStorage or defaults
   const [columnCount, setColumnCount] = useState(() => {
@@ -45,6 +47,38 @@ const LyricPage = () => {
     localStorage.setItem("textSize", textSize);
   }, [textSize]);
 
+  // Utility to format date
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const dd = String(date.getDate()).padStart(2, "0");
+    const hh = String(date.getHours()).padStart(2, "0");
+    const min = String(date.getMinutes()).padStart(2, "0");
+    return `${yyyy}/${mm}/${dd}-${hh}:${min}`;
+  };
+
+  // Fetch the song details if no song is selected
+  useEffect(() => {
+    if (!selectedSong) {
+      fetch("http://localhost:5000/api/songs")
+        .then((res) => res.json())
+        .then((songsData) => {
+          if (songsData.length > 0) {
+            setSongs(songsData); // Store songs in state
+            setSelectedSong(songsData[0]);
+          }
+        })
+        .catch((err) => console.error("Error fetching songs:", err));
+    } else {
+      // If a song is already selected (e.g., via navigation), fetch all songs to have access for random selection
+      fetch("http://localhost:5000/api/songs")
+        .then((res) => res.json())
+        .then((songsData) => setSongs(songsData))
+        .catch((err) => console.error("Error fetching songs:", err));
+    }
+  }, [selectedSong]);
+
   // Handler to toggle column count
   const toggleColumns = () => {
     setColumnCount((prevCount) => (prevCount === 1 ? 2 : 1));
@@ -55,21 +89,25 @@ const LyricPage = () => {
     setTextSize(e.target.value);
   };
 
-  // Fetch the song details if no song is selected
-  useEffect(() => {
-    if (!selectedSong) {
-      fetch("http://localhost:5000/api/songs")
-        .then((res) => res.json())
-        .then((songs) => {
-          if (songs.length > 0) {
-            setSelectedSong(songs[0]);
-          }
-        })
-        .catch((err) => console.error("Error fetching songs:", err));
-    }
-  }, [selectedSong]);
+  // Handler to load a random song
+  const getRandomSong = () => {
+    if (songs.length === 0) return;
+    if (songs.length === 1) return; // Only one song available
 
-  if (!selectedSong) return <p>Loading song...</p>;
+    let randomIndex;
+    do {
+      randomIndex = Math.floor(Math.random() * songs.length);
+    } while (songs[randomIndex].id === selectedSong.id);
+
+    setSelectedSong(songs[randomIndex]);
+  };
+
+  // Handler for song item click (navigate to another page or other actions)
+  const handleSongClick = (song) => {
+    // Implement navigation to lyric page or other desired behavior
+    // For example:
+    window.location.href = `/lyrics/${song.id}`;
+  };
 
   // Function to render lyrics with stanza separators
   const renderLyrics = (lyrics) => {
@@ -103,6 +141,23 @@ const LyricPage = () => {
     ));
   };
 
+  // Handle cases where no songs are available
+  if (songs.length === 0) {
+    return (
+      <LyricPageContainer>
+        <p>No songs available.</p>
+      </LyricPageContainer>
+    );
+  }
+
+  // If no selectedSong is set after fetching, show loading
+  if (!selectedSong)
+    return (
+      <LyricPageContainer>
+        <p>Loading song...</p>
+      </LyricPageContainer>
+    );
+
   return (
     <LyricPageContainer>
       <LyricPageHeader>
@@ -111,6 +166,15 @@ const LyricPage = () => {
           <h3>{selectedSong.artist}</h3>
         </SongDetails>
         <LyricPageControls>
+          {/* Random Button */}
+          <RandomButton
+            onClick={getRandomSong}
+            title="Load Random Song"
+            aria-label="Load a random song's lyrics"
+          >
+            <FaRandom />
+          </RandomButton>
+
           {/* Column Toggle Button */}
           <ControlButton
             onClick={toggleColumns}

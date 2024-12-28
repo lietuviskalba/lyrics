@@ -141,9 +141,55 @@ export const AdminSongList = styled.div`
   }
 `;
 
+// Wrapper for SongListTitle and SearchBar
+export const SongListTitleWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap; /* Allows wrapping on smaller screens */
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+`;
+
+// Title of the Song List
 export const SongListTitle = styled.h2`
   margin-bottom: 10px;
   color: ${(props) => props.theme.colors.text};
+`;
+
+// Container for the search bar
+export const SearchBar = styled.div`
+  display: flex;
+  align-items: center;
+  margin-left: 20px; /* Space between title and search bar */
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+    margin-top: 10px;
+    width: 100%;
+  }
+`;
+
+// Styled input for search
+export const SearchInput = styled.input`
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 250px;
+  font-size: 1em;
+  color: #333;
+
+  &:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 export const SongList = styled.ol`
