@@ -9,6 +9,7 @@ import {
   SongList,
   SongItem,
   SongBox,
+  SongImage, // Import the new SongImage component
 } from "./SongsPage.styled";
 
 const SongsPage = () => {
@@ -98,6 +99,19 @@ const SongsPage = () => {
                 <h3>{song.title}</h3>
                 <p>{song.artist}</p>
               </SongBox>
+              {song.image && (
+                <SongImage>
+                  <img
+                    src={`http://localhost:5000${song.image}`} // Ensure the image path is correct
+                    alt={`${song.title} cover`}
+                    loading="lazy"
+                    onError={(e) => {
+                      e.target.onerror = null; // Prevent infinite loop if fallback fails
+                      e.target.src = "/images/default.jpg"; // Path to your default image
+                    }}
+                  />
+                </SongImage>
+              )}
             </SongItem>
           ))}
         </SongList>

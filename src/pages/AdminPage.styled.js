@@ -4,7 +4,7 @@ import styled from "styled-components";
 // Container for the entire Admin Page
 export const AdminPageContainer = styled.div`
   margin: 20px;
-  color: #fff; /* Ensure visibility on dark background */
+  background-color: ${(props) => props.theme.colors.background};
 `;
 
 // Title of the Admin Page

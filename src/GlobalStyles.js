@@ -2,9 +2,6 @@
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyles = createGlobalStyle`
-  /* Reset CSS */
-  /* reset.css */
-
 /* Box sizing rules */
 *,
 *::before,
@@ -137,11 +134,12 @@ textarea {
 }
 
   /* Global Styles from style.css */
-  body {
+body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding-top: 30px; /* Equal to navbar height */
-    background-color:rgb(44, 43, 43); /* Example background */
+    background-color: ${(props) => props.theme.colors.background};
+    color: ${(props) => props.theme.colors.text};
   }
 
   /* Additional global styles from style.css */

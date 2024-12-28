@@ -5,6 +5,7 @@ import styled from "styled-components";
 export const LyricPageContainer = styled.div`
   margin: 20px;
   color: #333;
+  background-color: ${(props) => props.theme.colors.background};
 `;
 
 // Header section containing title and controls
