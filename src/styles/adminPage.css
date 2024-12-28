@@ -1,4 +1,4 @@
-/* adminPage.css */
+/* src/styles/adminPage.css */
 
 .admin-page {
   margin: 20px;
@@ -7,6 +7,7 @@
 .admin-title {
   margin-top: 50px;
   margin-bottom: 20px;
+  color: #fff; /* Ensure visibility on dark background */
 }
 
 .admin-container {
@@ -18,7 +19,7 @@
 .admin-add-song {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 0 0 40%; /* Reduced width */
   border-right: 1px solid #ccc; /* Vertical line */
   padding-right: 5%;
   padding-left: 10px; /* Some left padding too */
@@ -48,16 +49,10 @@
 }
 
 .admin-song-list {
-  flex: 1;
+  flex: 0 0 60%; /* Increased width */
   min-width: 300px; /* Adjust as needed */
   padding-left: 20px;
-}
-
-.admin-song-list small {
-  font-size: 12px;
-  color: #666;
-  display: block; /* Ensures it starts on a new line */
-  margin-top: 5px; /* Adds a little space above the date */
+  color: #fff; /* Ensure text is visible on dark background */
 }
 
 .admin-song-list h2 {
@@ -70,31 +65,123 @@
   margin: 0;
 }
 
-.admin-song-list li {
-  margin-bottom: 10px;
+.admin-song-list li.song-item {
+  margin-bottom: 15px;
   display: flex;
   flex-direction: column;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #323232; /* Dark background */
+  position: relative;
+}
+
+.song-main {
+  display: flex;
+  justify-content: flex-start; /* Align items to the start */
+  align-items: center;
+  flex-wrap: nowrap; /* Prevent wrapping to keep layout consistent */
 }
 
 .song-info {
   display: flex;
-  align-items: center; /* Vertically center the button and text */
+  align-items: center;
+  flex-grow: 1;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
-.song-info button {
+.delete-button {
   margin-right: 10px; /* Space between button and song details */
-}
-
-.admin-song-list button {
-  margin-right: 10px;
+  margin-left: 0; /* Ensure no left margin */
   padding: 5px 8px;
   background-color: #ff4d4d;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  flex-shrink: 0; /* Prevent button from shrinking */
 }
 
-.admin-song-list button:hover {
+.delete-button:hover {
   background-color: #e60000;
+}
+
+.song-title-artist {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap; /* Prevent text from wrapping */
+  font-weight: bold;
+  font-size: 16px;
+  color: #b2b2b2;
+  word-break: break-word; /* Prevent long titles from breaking layout */
+}
+
+.song-title-artist::after {
+  content: "|";
+  margin: 0 10px;
+  color: #999;
+}
+
+.song-title-artist:last-child::after {
+  content: "";
+}
+
+.song-image {
+  flex-shrink: 0; /* Prevent image from shrinking */
+  margin-left: auto; /* Pushes the image to the far right */
+}
+
+.song-image img {
+  width: 80px; /* Fixed width */
+  height: 80px; /* Fixed height */
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.song-extra-info {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+  text-align: left;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-container {
+    flex-direction: column;
+  }
+
+  .admin-add-song {
+    border-right: none;
+    padding-right: 0;
+    padding-left: 0;
+    flex: 0 0 100%; /* Full width on smaller screens */
+  }
+
+  .admin-song-list {
+    flex: 0 0 100%; /* Full width on smaller screens */
+    padding-left: 0;
+    margin-top: 20px;
+  }
+
+  .song-main {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .song-image {
+    margin-left: 0;
+    margin-top: 10px;
+  }
+
+  .song-title-artist {
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  }
+}
+
+/* Optional: Enhance Song Item Hover Effect */
+.admin-song-list li.song-item:hover {
+  background-color: #1b1c1d;
 }

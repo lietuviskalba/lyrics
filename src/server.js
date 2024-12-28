@@ -1,18 +1,37 @@
+// server.js
 import express from "express";
-import cors from "cors"; // Import the CORS middleware
-import songRoutes from "./routes/songRoutes.js";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+import songRoutes from "../src//routes/songRoutes.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Enable CORS
+// Middleware
 app.use(cors({ origin: "http://localhost:5173" }));
-
-// Middleware to parse JSON request bodies
 app.use(express.json());
 
-app.use("/api", songRoutes);
-//console.log(app._router.stack);
+// Logging Middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
 
+// Serve static files from the public directory
+app.use("/images", express.static(path.join(__dirname, "public/images")));
+
+// Routes
+app.use("/api", songRoutes);
+
+// Health Check Route
+app.get("/api/health", (req, res) => {
+  res.json({ status: "Server is healthy" });
+});
+
+// Start the server
 const PORT = 5000;
 app.listen(PORT, () =>
   console.log(`Server running on http://localhost:${PORT}`)
