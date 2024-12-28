@@ -46,6 +46,7 @@ export const AdminAddSong = styled.div`
 
 export const AddSongTitle = styled.h2`
   /* Styles for the Add Song title */
+  color: ${(props) => props.theme.colors.text};
 `;
 
 export const TextArea = styled.textarea`
@@ -65,6 +66,7 @@ export const ImageUploadSection = styled.div`
 
 export const ImageUploadLabel = styled.label`
   /* Styles for the image upload label */
+  color: ${(props) => props.theme.colors.text};
 `;
 
 export const UploadButton = styled.button`
@@ -98,7 +100,7 @@ export const PasteInstruction = styled.p`
 export const AddSongButton = styled.button`
   margin-top: 10px;
   padding: 8px 12px;
-  background-color: #28a745;
+  background-color: #28a745; /* Green for Add */
   color: white;
   border: none;
   border-radius: 4px;
@@ -106,6 +108,22 @@ export const AddSongButton = styled.button`
 
   &:hover {
     background-color: #218838;
+  }
+`;
+
+// New Styled Component for Update Button
+export const UpdateButton = styled.button`
+  margin-right: 10px; /* Space between buttons */
+  padding: 5px 8px;
+  background-color: #ffa500; /* Orange color */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  flex-shrink: 0; /* Prevent button from shrinking */
+
+  &:hover {
+    background-color: #ff8c00; /* Darker orange on hover */
   }
 `;
 
@@ -125,6 +143,7 @@ export const AdminSongList = styled.div`
 
 export const SongListTitle = styled.h2`
   margin-bottom: 10px;
+  color: ${(props) => props.theme.colors.text};
 `;
 
 export const SongList = styled.ol`
@@ -170,7 +189,7 @@ export const DeleteButton = styled.button`
   margin-right: 10px; /* Space between button and song details */
   margin-left: 0; /* Ensure no left margin */
   padding: 5px 8px;
-  background-color: #ff4d4d;
+  background-color: #ff4d4d; /* Red for Delete */
   color: white;
   border: none;
   border-radius: 4px;
@@ -213,4 +232,50 @@ export const SongExtraInfo = styled.small`
   font-size: 12px;
   color: #666;
   text-align: left;
+`;
+
+export const SongURLStatus = styled.div`
+  margin-left: 10px;
+  color: ${(props) => {
+    switch (
+      props.$status // Changed from props.status to props.$status
+    ) {
+      case "functional":
+        return "#28a745"; // Green
+      case "broken":
+        return "#dc3545"; // Red
+      case "no-url":
+      default:
+        return "#6c757d"; // Gray
+    }
+  }};
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+
+  a {
+    color: ${(props) => {
+      switch (
+        props.$status // Changed from props.status to props.$status
+      ) {
+        case "functional":
+          return "#28a745";
+        case "broken":
+          return "#dc3545";
+        case "no-url":
+        default:
+          return "#6c757d";
+      }
+    }};
+    text-decoration: underline;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+    margin-top: 10px;
+  }
 `;

@@ -1,22 +1,19 @@
-// songRoutes.js
+// src/routes/songRoutes.js
 import { Router } from "express";
 import fs from "fs/promises";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
 import path from "path";
 import multer from "multer";
+// Uncomment the following line if using Node.js < 18
+// import fetch from 'node-fetch';
 
 const router = Router();
 const filePath = path.join(process.cwd(), "src", "data", "songs.json");
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 // Configure storage for uploaded images
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const imagesPath = path.join(__dirname, "../../public/images");
-    console.log("Saving image to:", imagesPath); // Debugging log
-    cb(null, path.join(process.cwd(), "src", "public", "images")); // Ensure this directory exists
+    const imagesPath = path.join(process.cwd(), "src", "public", "images");
+    cb(null, imagesPath); // Ensure this directory exists
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
@@ -71,6 +68,16 @@ const writeSongs = async (songs) => {
   }
 };
 
+// Utility function to validate URLs
+const isValidURL = (url) => {
+  try {
+    new URL(url);
+    return true;
+  } catch (_) {
+    return false;
+  }
+};
+
 // GET all songs
 router.get("/songs", async (req, res) => {
   try {
@@ -87,13 +94,6 @@ router.get("/songs", async (req, res) => {
 // POST save-song with image upload
 router.post("/save-song", upload.single("image"), async (req, res) => {
   try {
-    console.log("POST /save-song request received");
-    console.log("Form Fields:", req.body);
-    if (req.file) {
-      console.log("Uploaded Image:", req.file.filename);
-    } else {
-      console.log("No image uploaded. Using default image.");
-    }
     const newSong = req.body;
 
     // Validate required fields
@@ -112,6 +112,28 @@ router.post("/save-song", upload.single("image"), async (req, res) => {
       newSong.image = `/images/${req.file.filename}`;
     } else {
       newSong.image = "/images/default.jpg"; // Ensure default.jpg exists in public/images
+    }
+
+    // Handle URL
+    if (newSong.url && isValidURL(newSong.url)) {
+      // Use YouTube oEmbed to check if video exists
+      try {
+        const oEmbedURL = `https://www.youtube.com/oembed?url=${encodeURIComponent(
+          newSong.url
+        )}&format=json`;
+        const response = await fetch(oEmbedURL, { method: "GET" });
+        if (response.ok) {
+          newSong.urlStatus = "functional";
+        } else {
+          newSong.urlStatus = "broken";
+        }
+      } catch (err) {
+        console.error("Error checking YouTube URL:", err);
+        newSong.urlStatus = "broken";
+      }
+    } else {
+      newSong.url = null; // Set to null if no URL or invalid URL
+      newSong.urlStatus = "no-url";
     }
 
     // Parse count to integer
@@ -148,18 +170,139 @@ router.post("/save-song", upload.single("image"), async (req, res) => {
   }
 });
 
+// PUT update-song with image upload
+router.put("/songs/:id", upload.single("image"), async (req, res) => {
+  try {
+    const songId = parseInt(req.params.id, 10);
+    const updatedData = req.body;
+
+    // Validate required fields
+    if (
+      !updatedData.title ||
+      !updatedData.artist ||
+      !updatedData.lyrics ||
+      !updatedData.date_lyrics_added
+    ) {
+      return res.status(400).json({ message: "Missing required song fields." });
+    }
+
+    const songs = await readSongs();
+    const songIndex = songs.findIndex((song) => song.id === songId);
+
+    if (songIndex === -1) {
+      return res.status(404).json({ message: "Song not found." });
+    }
+
+    const songToUpdate = songs[songIndex];
+
+    // Handle image replacement
+    if (req.file) {
+      // Delete the old image if it's not the default image
+      if (songToUpdate.image && songToUpdate.image !== "/images/default.jpg") {
+        const oldImagePath = path.join(
+          process.cwd(),
+          "src",
+          "public",
+          songToUpdate.image
+        );
+        try {
+          await fs.unlink(oldImagePath);
+          console.log(`Deleted old image: ${oldImagePath}`);
+        } catch (err) {
+          console.error(`Error deleting old image: ${err}`);
+          // Proceed even if deleting fails
+        }
+      }
+      // Assign the new image path
+      songToUpdate.image = `/images/${req.file.filename}`;
+    }
+    // If no new image is uploaded, keep the existing image
+
+    // Handle URL
+    if (updatedData.url && isValidURL(updatedData.url)) {
+      // Use YouTube oEmbed to check if video exists
+      try {
+        const oEmbedURL = `https://www.youtube.com/oembed?url=${encodeURIComponent(
+          updatedData.url
+        )}&format=json`;
+        const response = await fetch(oEmbedURL, { method: "GET" });
+        if (response.ok) {
+          songToUpdate.urlStatus = "functional";
+        } else {
+          songToUpdate.urlStatus = "broken";
+        }
+      } catch (err) {
+        console.error("Error checking YouTube URL:", err);
+        songToUpdate.urlStatus = "broken";
+      }
+      songToUpdate.url = updatedData.url.trim();
+    } else {
+      // If no URL is provided or invalid, remove the URL
+      songToUpdate.url = null;
+      songToUpdate.urlStatus = "no-url";
+    }
+
+    // Update other fields
+    songToUpdate.title = updatedData.title;
+    songToUpdate.artist = updatedData.artist;
+    songToUpdate.lyrics =
+      typeof updatedData.lyrics === "string"
+        ? updatedData.lyrics.split("\n").map((line) => line.trim())
+        : updatedData.lyrics;
+    songToUpdate.date_lyrics_added = updatedData.date_lyrics_added;
+    songToUpdate.count = parseInt(updatedData.count, 10) || songToUpdate.count;
+
+    // Save the updated songs list
+    await writeSongs(songs);
+
+    res.status(200).json({ message: "Song updated successfully!" });
+  } catch (err) {
+    if (err instanceof multer.MulterError) {
+      // Handle Multer-specific errors
+      if (err.code === "LIMIT_FILE_SIZE") {
+        return res
+          .status(400)
+          .json({ message: "Image size should not exceed 5MB." });
+      }
+      return res.status(400).json({ message: err.message });
+    } else {
+      console.error("Error in PUT /songs/:id:", err);
+      res.status(500).json({ message: "Error updating song." });
+    }
+  }
+});
+
 // DELETE a song
 router.delete("/songs/:id", async (req, res) => {
   const songId = parseInt(req.params.id, 10);
   try {
     const songs = await readSongs();
-    const updatedSongs = songs.filter((song) => song.id !== songId);
+    const songIndex = songs.findIndex((song) => song.id === songId);
 
-    if (updatedSongs.length === songs.length) {
+    if (songIndex === -1) {
       return res.status(404).send("Song not found.");
     }
 
-    await writeSongs(updatedSongs);
+    const [deletedSong] = songs.splice(songIndex, 1);
+
+    // Delete the image if it's not the default image
+    if (deletedSong.image && deletedSong.image !== "/images/default.jpg") {
+      const imagePath = path.join(
+        process.cwd(),
+        "src",
+        "public",
+        deletedSong.image
+      );
+      try {
+        await fs.unlink(imagePath);
+        console.log(`Deleted image: ${imagePath}`);
+      } catch (err) {
+        console.error(`Error deleting image: ${err}`);
+        // Proceed even if deleting fails
+      }
+    }
+
+    await writeSongs(songs);
     res.status(200).send("Song deleted successfully!");
   } catch (err) {
     console.error(`Error in DELETE /songs/${songId}:`, err);
@@ -170,7 +313,6 @@ router.delete("/songs/:id", async (req, res) => {
 // POST increment count for a song
 router.post("/songs/:id/increment", async (req, res) => {
   const songId = parseInt(req.params.id, 10);
-  console.log(`Received request to increment count for song ID: ${songId}`);
   try {
     const songs = await readSongs();
     const songIndex = songs.findIndex((s) => s.id === songId);
@@ -182,12 +324,8 @@ router.post("/songs/:id/increment", async (req, res) => {
         songs[songIndex].count = 1; // Initialize if undefined or not a number
       }
       await writeSongs(songs);
-      console.log(
-        `Count incremented for song ID: ${songId}, new count: ${songs[songIndex].count}`
-      );
       res.json({ message: "Count incremented", count: songs[songIndex].count });
     } else {
-      console.log("Song not found for increment.");
       res.status(404).json({ message: "Song not found" });
     }
   } catch (err) {

@@ -13,12 +13,7 @@ const app = express();
 // Middleware
 app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
-
-// Logging Middleware
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url}`);
-  next();
-});
+app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from the public directory
 app.use("/images", express.static(path.join(__dirname, "public/images")));
