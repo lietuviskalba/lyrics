@@ -1,4 +1,9 @@
-/* reset.css */
+// src/GlobalStyles.js
+import { createGlobalStyle } from "styled-components";
+
+const GlobalStyles = createGlobalStyle`
+  /* Reset CSS */
+  /* reset.css */
 
 /* Box sizing rules */
 *,
@@ -130,3 +135,39 @@ fieldset {
 textarea {
   resize: vertical;
 }
+
+  /* Global Styles from style.css */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding-top: 30px; /* Equal to navbar height */
+    background-color:rgb(44, 43, 43); /* Example background */
+  }
+
+  /* Additional global styles from style.css */
+  @media (max-width: 768px) {
+    .admin-container {
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .admin-add-song,
+    .admin-song-list {
+      padding-left: 0;
+      border-right: none;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .songs-page h1 {
+      margin-top: 10px; /* Adjust as needed */
+    }
+
+    .song-item {
+      padding: 10px; /* Reduce padding for smaller screens */
+    }
+  }
+
+  /* Add any other global styles here */
+`;
+
+export default GlobalStyles;

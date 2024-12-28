@@ -1,7 +1,15 @@
-// SongsPage.jsx
+// src/pages/SongsPage.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/songsPage.css";
+import {
+  SongsPageContainer,
+  SongsPageTitle,
+  SearchBar,
+  SearchInput,
+  SongList,
+  SongItem,
+  SongBox,
+} from "./SongsPage.styled";
 
 const SongsPage = () => {
   const [songs, setSongs] = useState([]);
@@ -60,26 +68,25 @@ const SongsPage = () => {
   );
 
   return (
-    <div className="songs-page">
-      <h1>All Songs</h1>
-      <div className="search-bar">
-        <input
+    <SongsPageContainer>
+      <SongsPageTitle>All Songs</SongsPageTitle>
+      <SearchBar>
+        <SearchInput
           type="text"
           placeholder="Search songs by name..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           aria-label="Search songs by name"
         />
-      </div>
+      </SearchBar>
       {loading ? (
         <p>Loading songs...</p>
       ) : (
-        <ul className="song-list">
+        <SongList>
           {filteredSongs.map((song) => (
-            <li
+            <SongItem
               key={song.id}
               onClick={() => handleSongClick(song)}
-              className="song-item"
               tabIndex="0" // Makes the item focusable
               onKeyPress={(e) => {
                 if (e.key === "Enter") {
@@ -87,15 +94,15 @@ const SongsPage = () => {
                 }
               }}
             >
-              <div className="song-box">
+              <SongBox>
                 <h3>{song.title}</h3>
                 <p>{song.artist}</p>
-              </div>
-            </li>
+              </SongBox>
+            </SongItem>
           ))}
-        </ul>
+        </SongList>
       )}
-    </div>
+    </SongsPageContainer>
   );
 };
 

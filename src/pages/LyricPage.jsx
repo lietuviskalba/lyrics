@@ -1,8 +1,22 @@
-// LyricPage.jsx
+// src/pages/LyricPage.jsx
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { FaColumns, FaList } from "react-icons/fa";
-import "../styles/lyricPage.css";
+import {
+  LyricPageContainer,
+  LyricPageHeader,
+  SongDetails,
+  LyricPageControls,
+  ControlButton,
+  TextSizeControl,
+  TextSizeLabel,
+  TextSizeSlider,
+  LyricsContainer,
+  Stanza,
+  StanzaParagraph,
+  StanzaSeparator,
+  DateAdded,
+} from "./LyricPage.styled";
 
 const LyricPage = () => {
   const location = useLocation();
@@ -79,38 +93,37 @@ const LyricPage = () => {
     }
 
     return stanzas.map((stanza, index) => (
-      <div key={index} className="stanza">
+      <Stanza key={index}>
         {stanza.map((line, idx) => (
-          <p key={idx}>{line}</p>
+          <StanzaParagraph key={idx}>{line}</StanzaParagraph>
         ))}
         {/* Add a horizontal line after each stanza except the last */}
-        {index < stanzas.length - 1 && <hr className="stanza-separator" />}
-      </div>
+        {index < stanzas.length - 1 && <StanzaSeparator />}
+      </Stanza>
     ));
   };
 
   return (
-    <div className="lyric-page">
-      <div className="lyric-page-header">
-        <div>
+    <LyricPageContainer>
+      <LyricPageHeader>
+        <SongDetails>
           <h2>{selectedSong.title}</h2>
           <h3>{selectedSong.artist}</h3>
-        </div>
-        <div className="lyric-page-controls">
+        </SongDetails>
+        <LyricPageControls>
           {/* Column Toggle Button */}
-          <button
+          <ControlButton
             onClick={toggleColumns}
-            className="control-button"
             title="Toggle Columns"
             aria-label="Toggle between single and double column layout"
           >
             {columnCount === 1 ? <FaColumns /> : <FaList />}
-          </button>
+          </ControlButton>
 
           {/* Text Size Slider */}
-          <div className="text-size-control">
-            <label htmlFor="text-size-slider">Text Size</label>
-            <input
+          <TextSizeControl>
+            <TextSizeLabel htmlFor="text-size-slider">Text Size</TextSizeLabel>
+            <TextSizeSlider
               type="range"
               id="text-size-slider"
               min="12"
@@ -118,19 +131,19 @@ const LyricPage = () => {
               value={textSize}
               onChange={handleTextSizeChange}
             />
-          </div>
-        </div>
-      </div>
+          </TextSizeControl>
+        </LyricPageControls>
+      </LyricPageHeader>
 
-      <div
-        className={`lyrics columns-${columnCount}`}
-        style={{ fontSize: `${textSize}px` }}
+      <LyricsContainer
+        className={`columns-${columnCount}`}
+        $textSize={textSize}
       >
         {renderLyrics(selectedSong.lyrics)}
-      </div>
+      </LyricsContainer>
 
-      <p className="date-added">Added on: {selectedSong.date_lyrics_added}</p>
-    </div>
+      <DateAdded>Added on: {selectedSong.date_lyrics_added}</DateAdded>
+    </LyricPageContainer>
   );
 };
 

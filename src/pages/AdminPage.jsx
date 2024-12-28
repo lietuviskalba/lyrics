@@ -1,6 +1,29 @@
 // src/pages/AdminPage.jsx
 import React, { useState, useEffect, useRef } from "react";
-import "../styles/adminPage.css";
+import {
+  AdminPageContainer,
+  AdminTitle,
+  AdminContainer,
+  AdminAddSong,
+  AddSongTitle,
+  TextArea,
+  ImageUploadSection,
+  ImageUploadLabel,
+  UploadButton,
+  ImagePreview,
+  PasteInstruction,
+  AddSongButton,
+  AdminSongList,
+  SongListTitle,
+  SongList,
+  SongItem,
+  SongMain,
+  SongInfo,
+  DeleteButton,
+  SongTitleArtist,
+  SongImage,
+  SongExtraInfo,
+} from "./AdminPage.styled";
 
 function AdminPage() {
   const [songs, setSongs] = useState([]);
@@ -197,18 +220,18 @@ function AdminPage() {
   };
 
   return (
-    <div className="admin-page" onPaste={handlePaste}>
+    <AdminPageContainer onPaste={handlePaste}>
       {/* Top-left corner title */}
-      <h1 className="admin-title">Admin Page</h1>
+      <AdminTitle>Admin Page</AdminTitle>
 
       {error && <p className="error-message">Error: {error}</p>}
       {successMessage && <p className="success-message">{successMessage}</p>}
 
-      <div className="admin-container">
+      <AdminContainer>
         {/* Left Section: Add Song */}
-        <div className="admin-add-song">
-          <h2>Add Song</h2>
-          <textarea
+        <AdminAddSong>
+          <AddSongTitle>Add Song</AddSongTitle>
+          <TextArea
             rows="10"
             cols="50"
             value={textInput}
@@ -218,10 +241,10 @@ function AdminPage() {
           <br />
 
           {/* Image Upload Section */}
-          <div className="image-upload-section">
-            <label htmlFor="image-upload" className="image-upload-label">
+          <ImageUploadSection>
+            <ImageUploadLabel htmlFor="image-upload">
               Upload Image (Optional):
-            </label>
+            </ImageUploadLabel>
             <input
               type="file"
               id="image-upload"
@@ -230,59 +253,51 @@ function AdminPage() {
               ref={fileInputRef}
               style={{ display: "none" }} // Hide the default file input
             />
-            <button
-              type="button"
-              onClick={() => fileInputRef.current.click()}
-              className="upload-button"
-            >
+            <UploadButton onClick={() => fileInputRef.current.click()}>
               Choose Image
-            </button>
-          </div>
+            </UploadButton>
+          </ImageUploadSection>
 
           {/* Image Preview */}
           {imagePreview && (
-            <div className="image-preview">
+            <ImagePreview>
               <p>Image Preview:</p>
-              <img src={imagePreview} alt="Preview" width="200" />
-            </div>
+              <img src={imagePreview} alt="Preview" />
+            </ImagePreview>
           )}
 
           {/* Paste Image Instructions */}
-          <p className="paste-instruction">
+          <PasteInstruction>
             You can also paste an image by copying it to your clipboard and
-            pressing
-            <strong> Ctrl + V</strong> (Windows) or <strong>Cmd + V</strong>{" "}
-            (Mac).
-          </p>
+            pressing <strong> Ctrl + V</strong> (Windows) or{" "}
+            <strong>Cmd + V</strong> (Mac).
+          </PasteInstruction>
 
-          <button onClick={handleAddSong} className="add-song-button">
-            Add Song
-          </button>
-        </div>
+          <AddSongButton onClick={handleAddSong}>Add Song</AddSongButton>
+        </AdminAddSong>
 
         {/* Right Section: List of Songs */}
-        <div className="admin-song-list">
-          <h2>
+        <AdminSongList>
+          <SongListTitle>
             List of Songs (<span>{songs.length}</span>)
-          </h2>
-          <ol>
+          </SongListTitle>
+          <SongList>
             {songs.map((song) => (
-              <li key={song.id} className="song-item">
-                <div className="song-main">
-                  <div className="song-info">
-                    <button
+              <SongItem key={song.id}>
+                <SongMain>
+                  <SongInfo>
+                    <DeleteButton
                       onClick={() => handleDeleteSong(song.id)}
-                      className="delete-button"
                       aria-label={`Delete ${song.title} by ${song.artist}`}
                     >
                       Delete
-                    </button>
-                    <span className="song-title-artist">
+                    </DeleteButton>
+                    <SongTitleArtist>
                       {song.title} - {song.artist}
-                    </span>
-                  </div>
+                    </SongTitleArtist>
+                  </SongInfo>
                   {song.image && (
-                    <div className="song-image">
+                    <SongImage>
                       <img
                         src={`http://localhost:5000${song.image}`}
                         alt={`${song.title} cover`}
@@ -290,18 +305,18 @@ function AdminPage() {
                         height="80"
                         loading="lazy"
                       />
-                    </div>
+                    </SongImage>
                   )}
-                </div>
-                <small className="song-extra-info">
+                </SongMain>
+                <SongExtraInfo>
                   Added on: {song.date_lyrics_added}; Count: {song.count}
-                </small>
-              </li>
+                </SongExtraInfo>
+              </SongItem>
             ))}
-          </ol>
-        </div>
-      </div>
-    </div>
+          </SongList>
+        </AdminSongList>
+      </AdminContainer>
+    </AdminPageContainer>
   );
 }
 
