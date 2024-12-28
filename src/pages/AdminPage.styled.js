@@ -191,15 +191,9 @@ export const SongTitleArtist = styled.span`
   color: #b2b2b2;
   word-break: break-word; /* Prevent long titles from breaking layout */
 
-  &::after {
-    content: "|";
-    margin: 0 10px;
-    color: #999;
-  }
-
-  &:last-child::after {
-    content: "";
-  }
+  /* Add a left border as a vertical separator */
+  border-left: 1px solid #999;
+  padding-left: 10px;
 `;
 
 export const SongImage = styled.div`

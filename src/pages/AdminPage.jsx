@@ -231,6 +231,7 @@ function AdminPage() {
         {/* Left Section: Add Song */}
         <AdminAddSong>
           <AddSongTitle>Add Song</AddSongTitle>
+          <AddSongButton onClick={handleAddSong}>Add Song</AddSongButton>
           <TextArea
             rows="10"
             cols="50"
