@@ -167,4 +167,33 @@ router.delete("/songs/:id", async (req, res) => {
   }
 });
 
+// POST increment count for a song
+router.post("/songs/:id/increment", async (req, res) => {
+  const songId = parseInt(req.params.id, 10);
+  console.log(`Received request to increment count for song ID: ${songId}`);
+  try {
+    const songs = await readSongs();
+    const songIndex = songs.findIndex((s) => s.id === songId);
+    if (songIndex !== -1) {
+      // Ensure the 'count' property exists and is a number
+      if (typeof songs[songIndex].count === "number") {
+        songs[songIndex].count += 1;
+      } else {
+        songs[songIndex].count = 1; // Initialize if undefined or not a number
+      }
+      await writeSongs(songs);
+      console.log(
+        `Count incremented for song ID: ${songId}, new count: ${songs[songIndex].count}`
+      );
+      res.json({ message: "Count incremented", count: songs[songIndex].count });
+    } else {
+      console.log("Song not found for increment.");
+      res.status(404).json({ message: "Song not found" });
+    }
+  } catch (err) {
+    console.error("Error in POST /songs/:id/increment:", err);
+    res.status(500).json({ message: "Error updating song count" });
+  }
+});
+
 export default router;
