@@ -25,3 +25,7 @@ dist-ssr
 
 # Ignore environment variables
 .env
+
+# Ignore img files
+.png
+.jpg
