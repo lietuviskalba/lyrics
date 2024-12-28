@@ -12,6 +12,7 @@ export const SongsPageTitle = styled.h1`
   text-align: center;
   margin-top: 20px;
   margin-bottom: 20px;
+  color: ${(props) => props.theme.colors.text};
 `;
 
 export const SearchBar = styled.div`

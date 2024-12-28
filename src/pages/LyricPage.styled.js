@@ -13,6 +13,7 @@ export const LyricPageHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap; /* Allows wrapping on smaller screens */
+  color: ${(props) => props.theme.colors.text};
 `;
 
 export const SongDetails = styled.div`
@@ -53,7 +54,7 @@ export const TextSizeControl = styled.div`
 
 export const TextSizeLabel = styled.label`
   font-size: 0.9em;
-  color: #666;
+  color: rgb(190, 190, 190);
 `;
 
 export const TextSizeSlider = styled.input`
@@ -65,6 +66,7 @@ export const LyricsContainer = styled.div`
   line-height: 1.6;
   transition: all 0.3s ease-in-out; /* Smooth transition for layout changes */
   font-size: ${(props) => props.$textSize}px;
+  color: rgb(212, 210, 210);
 
   &.columns-1 {
     column-count: 1;
