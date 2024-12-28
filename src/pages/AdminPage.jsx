@@ -1,5 +1,6 @@
 // src/pages/AdminPage.jsx
 import React, { useState, useEffect, useRef } from "react";
+import SearchBar from "../components/SearchBar";
 import {
   AdminPageContainer,
   AdminTitle,
@@ -14,20 +15,19 @@ import {
   PasteInstruction,
   AddSongButton,
   AdminSongList,
-  SongListTitleWrapper, // Import SongListTitleWrapper
+  SongListTitleWrapper,
   SongListTitle,
-  SearchBar, // Import SearchBar
-  SearchInput, // Import SearchInput
   SongList,
   SongItem,
   SongMain,
   SongInfo,
   DeleteButton,
-  UpdateButton, // New Import
+  UpdateButton,
   SongTitleArtist,
   SongImage,
   SongExtraInfo,
   SongURLStatus,
+  NoSongsMessage,
 } from "./AdminPage.styled";
 
 function AdminPage() {
@@ -63,6 +63,15 @@ function AdminPage() {
       .then((data) => setSongs(data))
       .catch((err) => console.error("Error fetching songs:", err));
   }, []);
+
+  // Define filteredSongs
+  const filteredSongs = songs.filter((song) => {
+    const lowerSearchTerm = adminSearchTerm.toLowerCase();
+    return (
+      song.title.toLowerCase().includes(lowerSearchTerm) ||
+      song.artist.toLowerCase().includes(lowerSearchTerm)
+    );
+  });
 
   // DELETE request
   const handleDeleteSong = async (id) => {
@@ -421,15 +430,6 @@ function AdminPage() {
     window.location.href = `/lyrics/${song.id}`;
   };
 
-  // Filter songs based on search term (title or artist)
-  const filteredSongs = songs.filter((song) => {
-    const lowerSearchTerm = adminSearchTerm.toLowerCase();
-    return (
-      song.title.toLowerCase().includes(lowerSearchTerm) ||
-      song.artist.toLowerCase().includes(lowerSearchTerm)
-    );
-  });
-
   return (
     <AdminPageContainer onPaste={handlePaste}>
       {/* Top-left corner title */}
@@ -523,89 +523,92 @@ function AdminPage() {
             <SongListTitle>
               List of Songs (<span>{songs.length}</span>)
             </SongListTitle>
-            <SearchBar>
-              <SearchInput
-                type="text"
-                placeholder="Search songs or artists..."
-                value={adminSearchTerm}
-                onChange={(e) => setAdminSearchTerm(e.target.value)}
-                aria-label="Search songs by name or artist"
-              />
-            </SearchBar>
+            <SearchBar
+              placeholder="Search songs or artists..."
+              onSearch={(query) => setAdminSearchTerm(query)}
+              initialValue={adminSearchTerm}
+              fullWidth={false}
+            />
           </SongListTitleWrapper>
-          <SongList>
-            {filteredSongs.map((song) => (
-              <SongItem
-                key={song.id}
-                onClick={() => handleSongClick(song)}
-                tabIndex="0" // Makes the item focusable
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") {
-                    handleSongClick(song);
-                  }
-                }}
-              >
-                <SongMain>
-                  <SongInfo>
-                    <DeleteButton
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent triggering SongItem's onClick
-                        handleDeleteSong(song.id);
-                      }}
-                      aria-label={`Delete ${song.title} by ${song.artist}`}
-                    >
-                      Delete
-                    </DeleteButton>
-                    <UpdateButton
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent triggering SongItem's onClick
-                        handleUpdateButtonClick(song);
-                      }}
-                      aria-label={`Update ${song.title} by ${song.artist}`}
-                    >
-                      Update
-                    </UpdateButton>
-                    <SongTitleArtist>
-                      {song.title} - {song.artist}
-                    </SongTitleArtist>
-                    {/* URL Status Display with Transient Prop */}
-                    <SongURLStatus $status={song.urlStatus}>
-                      {song.urlStatus === "functional" ? (
-                        <a
-                          href={song.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()} // Prevent triggering SongItem's onClick
+          <div aria-live="polite">
+            {filteredSongs.length === 0 ? (
+              <NoSongsMessage>No songs found.</NoSongsMessage>
+            ) : (
+              <SongList>
+                {filteredSongs.map((song) => (
+                  <SongItem
+                    key={song.id}
+                    onClick={() => handleSongClick(song)}
+                    tabIndex="0" // Makes the item focusable
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        handleSongClick(song);
+                      }
+                    }}
+                  >
+                    <SongMain>
+                      <SongInfo>
+                        <DeleteButton
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent triggering SongItem's onClick
+                            handleDeleteSong(song.id);
+                          }}
+                          aria-label={`Delete ${song.title} by ${song.artist}`}
                         >
-                          Click link
-                        </a>
-                      ) : song.urlStatus === "broken" ? (
-                        "URL is broken"
-                      ) : (
-                        "No URL"
+                          Delete
+                        </DeleteButton>
+                        <UpdateButton
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent triggering SongItem's onClick
+                            handleUpdateButtonClick(song);
+                          }}
+                          aria-label={`Update ${song.title} by ${song.artist}`}
+                        >
+                          Update
+                        </UpdateButton>
+                        <SongTitleArtist>
+                          {song.title} - {song.artist}
+                        </SongTitleArtist>
+                        {/* URL Status Display with Transient Prop */}
+                        <SongURLStatus $status={song.urlStatus}>
+                          {song.urlStatus === "functional" ? (
+                            <a
+                              href={song.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()} // Prevent triggering SongItem's onClick
+                            >
+                              Click link
+                            </a>
+                          ) : song.urlStatus === "broken" ? (
+                            "URL is broken"
+                          ) : (
+                            "No URL"
+                          )}
+                        </SongURLStatus>
+                      </SongInfo>
+                      {song.image && (
+                        <SongImage>
+                          <img
+                            src={`http://localhost:5000${song.image}`}
+                            alt={`${song.title} cover`}
+                            loading="lazy"
+                            onError={(e) => {
+                              e.target.onerror = null; // Prevent infinite loop if fallback fails
+                              e.target.src = "/images/default.jpg"; // Path to your default image
+                            }}
+                          />
+                        </SongImage>
                       )}
-                    </SongURLStatus>
-                  </SongInfo>
-                  {song.image && (
-                    <SongImage>
-                      <img
-                        src={`http://localhost:5000${song.image}`}
-                        alt={`${song.title} cover`}
-                        loading="lazy"
-                        onError={(e) => {
-                          e.target.onerror = null; // Prevent infinite loop if fallback fails
-                          e.target.src = "/images/default.jpg"; // Path to your default image
-                        }}
-                      />
-                    </SongImage>
-                  )}
-                </SongMain>
-                <SongExtraInfo>
-                  Added on: {song.date_lyrics_added}; Count: {song.count}
-                </SongExtraInfo>
-              </SongItem>
-            ))}
-          </SongList>
+                    </SongMain>
+                    <SongExtraInfo>
+                      Added on: {song.date_lyrics_added}; Count: {song.count}
+                    </SongExtraInfo>
+                  </SongItem>
+                ))}
+              </SongList>
+            )}
+          </div>
         </AdminSongList>
       </AdminContainer>
     </AdminPageContainer>

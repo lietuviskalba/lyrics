@@ -325,3 +325,9 @@ export const SongURLStatus = styled.div`
     margin-top: 10px;
   }
 `;
+export const NoSongsMessage = styled.p`
+  font-size: 1em;
+  color: #ccc;
+  text-align: center;
+  margin-top: 20px;
+`;

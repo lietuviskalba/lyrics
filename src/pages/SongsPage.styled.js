@@ -16,23 +16,6 @@ export const SongsPageTitle = styled.h1`
   color: ${(props) => props.theme.colors.text};
 `;
 
-export const SearchBar = styled.div`
-  margin-bottom: 20px;
-  text-align: center;
-`;
-
-export const SearchInput = styled.input`
-  width: 50%;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-
-  @media (max-width: 768px) {
-    width: 80%;
-  }
-`;
-
 export const SongList = styled.ul`
   list-style: none; /* Remove default bullets */
   padding: 0;
@@ -105,4 +88,12 @@ export const SongImage = styled.div`
       height: auto; /* Maintain aspect ratio */
     }
   }
+`;
+
+// Optional: Styled component for "No songs found" message
+export const NoSongsMessage = styled.p`
+  font-size: 1em;
+  color: #ccc;
+  text-align: center;
+  margin-top: 20px;
 `;
