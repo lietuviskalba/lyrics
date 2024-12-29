@@ -16,7 +16,7 @@ const SongsPage = () => {
   const [songs, setSongs] = useState([]);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true); // New state for loading
+  const [loading, setLoading] = useState(true); // State for loading
 
   // Fetch songs when the component loads
   useEffect(() => {
