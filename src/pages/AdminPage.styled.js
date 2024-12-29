@@ -331,3 +331,22 @@ export const NoSongsMessage = styled.p`
   text-align: center;
   margin-top: 20px;
 `;
+
+export const OtherLanguageSection = styled.div`
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  label {
+    color: ${(props) => props.theme.colors.text};
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+  }
+`;

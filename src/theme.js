@@ -5,6 +5,8 @@ export const theme = {
     secondary: "#ff4d4d",
     text: "#ffffff",
     secondaryText: "#b2b2b2",
+    romaji: "rgb(118, 117, 117)", // Slightly darker for Romaji
+    translation: "rgb(103, 103, 103)", // Even darker for Translation
     hover: "#0056b3",
     dangerHover: "#e60000",
     background: "rgb(53, 53, 53)", // Dark background

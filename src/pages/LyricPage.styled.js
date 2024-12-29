@@ -6,6 +6,7 @@ export const LyricPageContainer = styled.div`
   margin: 20px;
   color: #333;
   background-color: ${(props) => props.theme.colors.background};
+  font-family: Arial, sans-serif;
 `;
 
 // Header section containing title and controls
@@ -20,6 +21,17 @@ export const LyricPageHeader = styled.div`
 // Details about the song (title and artist)
 export const SongDetails = styled.div`
   /* Additional styles can be added here if needed */
+  h2 {
+    margin: 0;
+    font-size: 2em;
+    color: ${(props) => props.theme.colors.primary};
+  }
+
+  h3 {
+    margin: 5px 0 0 0;
+    font-weight: normal;
+    color: ${(props) => props.theme.colors.secondaryText};
+  }
 `;
 
 // Controls container (YouTube Player, Random Button, Column Toggle, Text Size)
@@ -202,4 +214,24 @@ export const PlayStopButton = styled.button`
   &:active {
     transform: scale(0.95);
   }
+`;
+
+// **New Styled Components for Lyrics**
+
+export const LyricLine = styled.p`
+  margin: 5px 0;
+  color: ${(props) => props.theme.colors.text};
+  font-size: 1.5em;
+`;
+
+export const RomajiLine = styled.p`
+  margin: 3px 0 5px 0;
+  color: ${(props) => props.theme.colors.romaji};
+  font-size: 0.8em;
+`;
+
+export const TranslationLine = styled.p`
+  margin: 0 0 10px 0;
+  color: ${(props) => props.theme.colors.translation};
+  font-size: 0.6em;
 `;

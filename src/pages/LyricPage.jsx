@@ -20,6 +20,9 @@ import {
   DateAdded,
   YouTubeContainer,
   PlayStopButton,
+  LyricLine, // Newly added
+  RomajiLine, // Newly added
+  TranslationLine, // Newly added
 } from "./LyricPage.styled";
 
 const LyricPage = () => {
@@ -180,6 +183,10 @@ const LyricPage = () => {
 
   // **Lyrics Rendering Function**
   const renderLyrics = (lyrics) => {
+    if (!lyrics || lyrics.length === 0) {
+      return <p>No lyrics available.</p>;
+    }
+
     const stanzas = [];
     let currentStanza = [];
 
@@ -200,9 +207,24 @@ const LyricPage = () => {
 
     return stanzas.map((stanza, index) => (
       <Stanza key={index}>
-        {stanza.map((line, idx) => (
-          <StanzaParagraph key={idx}>{line}</StanzaParagraph>
-        ))}
+        {selectedSong.isForeign
+          ? // Handle "Other language" songs with interleaved Romaji and Translation
+            stanza.map((line, idx) => {
+              if (idx % 3 === 0) {
+                // Regular Lyric Line
+                return <LyricLine key={idx}>{line}</LyricLine>;
+              } else if (idx % 3 === 1) {
+                // Romaji Line
+                return <RomajiLine key={idx}>{line}</RomajiLine>;
+              } else if (idx % 3 === 2) {
+                // Translation Line
+                return <TranslationLine key={idx}>{line}</TranslationLine>;
+              } else {
+                return null;
+              }
+            })
+          : // Handle standard songs
+            stanza.map((line, idx) => <LyricLine key={idx}>{line}</LyricLine>)}
         {index < stanzas.length - 1 && <StanzaSeparator />}
       </Stanza>
     ));

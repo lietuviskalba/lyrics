@@ -1,5 +1,32 @@
 [
   {
+    "id": 1735478574466,
+    "title": "Gen Hoshino",
+    "artist": "Koi",
+    "lyrics": [
+      "営みの 街が暮れたら色めき",
+      "Itonami no machi ga kuretara iromeki",
+      "The streets are enlivened as the evening settles in",
+      "風たちは運ぶわ カラスと人々の群れ",
+      "Kaze tachi wa hakobu wa",
+      "And the winds carry away",
+      "",
+      "意味なんか ないさ暮らしがあるだけ",
+      "Karasu to hitobito no mure",
+      "The flock of crows and people",
+      "ただ腹を空かせて 君の元へ帰るんだ",
+      "Imi nanka nai sa kurashi ga aru dake",
+      "There is no meaning but just people simply living a life",
+      ""
+    ],
+    "date_lyrics_added": "2024/12/29-15:23",
+    "isForeign": "true",
+    "count": 5,
+    "url": "https://www.youtube.com/watch?v=jhOVibLEDhA",
+    "image": "/images/default.jpg",
+    "urlStatus": "functional"
+  },
+  {
     "id": 1735465603529,
     "title": "BlindLife",
     "artist": "YDE",
@@ -158,7 +185,7 @@
       "I don't know why, ey"
     ],
     "date_lyrics_added": "2024/12/29-13:39",
-    "count": 18,
+    "count": 19,
     "image": "/images/default.jpg",
     "url": "https://www.youtube.com/watch?v=bEcCMguNwVQ",
     "urlStatus": "functional"

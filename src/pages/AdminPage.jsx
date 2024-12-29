@@ -28,6 +28,7 @@ import {
   SongExtraInfo,
   SongURLStatus,
   NoSongsMessage,
+  OtherLanguageSection, // New Styled Component
 } from "./AdminPage.styled";
 
 function AdminPage() {
@@ -44,6 +45,9 @@ function AdminPage() {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
+
+  // New State for Other Language Checkbox
+  const [isOtherLanguage, setIsOtherLanguage] = useState(false);
 
   // Utility to format date
   const formatDate = (timestamp) => {
@@ -212,13 +216,36 @@ function AdminPage() {
       }
     }
 
-    // 8. Build the song object
+    // 8. If "Other language" is checked, validate lyrics structure
+    if (isOtherLanguage) {
+      // Ensure lyrics have groups of 3 lines (Lyric, Romaji, Translation)
+      for (let i = 0; i < lyrics.length; i++) {
+        if (lyrics[i].trim() === "") {
+          // Skip stanza breaks
+          continue;
+        }
+        // Check if the next two lines exist
+        if (i + 2 >= lyrics.length) {
+          alert(
+            `Incomplete lyrics structure at line ${
+              i + 1
+            }. Each lyric line should be followed by Romaji and Translation lines.`
+          );
+          return;
+        }
+        // Optional: Further validation can be added here
+        i += 2; // Skip the next two lines as they are Romaji and Translation
+      }
+    }
+
+    // 9. Build the song object
     const newSong = {
       id,
       title,
       artist,
       lyrics,
       date_lyrics_added: formatDate(id), // Using the top-level formatDate
+      isForeign: isOtherLanguage, // New flag
       // image will be handled separately
     };
 
@@ -226,13 +253,14 @@ function AdminPage() {
       newSong.url = url;
     }
 
-    // 9. Create FormData to include image and URL
+    // 10. Create FormData to include image and URL
     const formData = new FormData();
     formData.append("id", newSong.id);
     formData.append("title", newSong.title);
     formData.append("artist", newSong.artist);
     formData.append("lyrics", newSong.lyrics.join("\n"));
     formData.append("date_lyrics_added", newSong.date_lyrics_added);
+    formData.append("isForeign", newSong.isForeign); // Include the flag
     formData.append("count", newSong.count || 0);
 
     if (imageFile) {
@@ -249,7 +277,7 @@ function AdminPage() {
     }
     console.log("Fetch URL:", "http://localhost:5000/api/save-song");
 
-    // 10. Make the POST request to your server
+    // 11. Make the POST request to your server
     try {
       const response = await fetch("http://localhost:5000/api/save-song", {
         method: "POST",
@@ -262,6 +290,7 @@ function AdminPage() {
         setImageFile(null); // Clear image
         setImagePreview(null); // Clear preview
         setError("");
+        setIsOtherLanguage(false); // Reset Checkbox
 
         // Re-fetch the songs to update the list
         const updatedSongs = await fetch(
@@ -346,12 +375,35 @@ function AdminPage() {
       }
     }
 
-    // 8. Prepare FormData for update
+    // 8. If "Other language" is checked, validate lyrics structure
+    if (isOtherLanguage) {
+      // Ensure lyrics have groups of 3 lines (Lyric, Romaji, Translation)
+      for (let i = 0; i < lyrics.length; i++) {
+        if (lyrics[i].trim() === "") {
+          // Skip stanza breaks
+          continue;
+        }
+        // Check if the next two lines exist
+        if (i + 2 >= lyrics.length) {
+          alert(
+            `Incomplete lyrics structure at line ${
+              i + 1
+            }. Each lyric line should be followed by Romaji and Translation lines.`
+          );
+          return;
+        }
+        // Optional: Further validation can be added here
+        i += 2; // Skip the next two lines as they are Romaji and Translation
+      }
+    }
+
+    // 9. Prepare FormData for update
     const formData = new FormData();
     formData.append("title", title);
     formData.append("artist", artist);
     formData.append("lyrics", lyrics.join("\n"));
     formData.append("date_lyrics_added", formatDate(Date.now())); // Using the top-level formatDate
+    formData.append("isForeign", isOtherLanguage); // Include the flag
     formData.append("count", 0); // You may adjust this as needed
 
     if (imageFile) {
@@ -388,6 +440,7 @@ function AdminPage() {
         setImagePreview(null); // Clear preview
         setError("");
         setEditingSongId(null); // Exit update mode
+        setIsOtherLanguage(false); // Reset Checkbox
 
         // Re-fetch the songs to update the list
         const updatedSongs = await fetch(
@@ -421,6 +474,7 @@ function AdminPage() {
     setImagePreview(null);
     setError("");
     setSuccessMessage("");
+    setIsOtherLanguage(song.isForeign || false); // Set checkbox based on song's isForeign flag
   };
 
   // Handle clicking on a song item (navigate to lyrics page or other desired action)
@@ -444,6 +498,16 @@ function AdminPage() {
           <AddSongTitle>
             {editingSongId ? "Update Song" : "Add Song"}
           </AddSongTitle>
+          {/* Checkbox for Other Language */}
+          <OtherLanguageSection>
+            <input
+              type="checkbox"
+              id="other-language-checkbox"
+              checked={isOtherLanguage}
+              onChange={(e) => setIsOtherLanguage(e.target.checked)}
+            />
+            <label htmlFor="other-language-checkbox">Other language</label>
+          </OtherLanguageSection>
           <TextArea
             rows="10"
             cols="50"
@@ -510,6 +574,7 @@ function AdminPage() {
                 setImagePreview(null);
                 setError("");
                 setSuccessMessage("");
+                setIsOtherLanguage(false); // Reset Checkbox
               }}
             >
               Cancel Update
