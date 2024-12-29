@@ -9,6 +9,7 @@ import {
   FaStop,
   FaChevronLeft,
   FaChevronRight,
+  FaArrowUp, // Added Icon for Return to Top
 } from "react-icons/fa";
 import YouTube from "react-youtube";
 import {
@@ -31,6 +32,8 @@ import {
   TranslationLine,
   ControlsBox,
   CollapseButton,
+  ReturnToTopButton, // Added ReturnToTopButton
+  BottomReturnToTopButton, // Added BottomReturnToTopButton
 } from "./LyricPage.styled";
 
 const LyricPage = () => {
@@ -52,6 +55,7 @@ const LyricPage = () => {
   const [playerReady, setPlayerReady] = useState(false); // State to track player readiness
   const [playerError, setPlayerError] = useState(false); // State to track player errors
   const [isCollapsed, setIsCollapsed] = useState(false); // State to track ControlsBox collapse
+  const [showBottomButton, setShowBottomButton] = useState(false); // State to track bottom button visibility
 
   // **Ref Hook**
   const playerRef = useRef(null);
@@ -194,6 +198,37 @@ const LyricPage = () => {
     setPlayerError(true);
   };
 
+  // **Scroll to Top Handler**
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // **Effect Hook to Handle Scroll for Bottom Button Visibility**
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop;
+      const windowHeight = window.innerHeight;
+      const fullHeight = document.documentElement.scrollHeight;
+
+      // Determine if user is within 100px of the bottom
+      if (fullHeight - (scrollTop + windowHeight) < 100) {
+        setShowBottomButton(true);
+      } else {
+        setShowBottomButton(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    // Check on mount
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   // **Lyrics Rendering Function**
   const renderLyrics = (lyrics) => {
     if (!lyrics || lyrics.length === 0) {
@@ -219,8 +254,8 @@ const LyricPage = () => {
     }
 
     return stanzas.map((stanza, index) => (
-      <>
-        <Stanza key={index}>
+      <React.Fragment key={index}>
+        <Stanza>
           {selectedSong.isForeign
             ? // Handle "Foreign language" songs with Lyric, Romaji, and Translation
               stanza.map((line, idx) => {
@@ -244,7 +279,7 @@ const LyricPage = () => {
         </Stanza>
         {/* Render StanzaSeparator outside the Stanza to remove unwanted horizontal lines */}
         {index < stanzas.length - 1 && <StanzaSeparator />}
-      </>
+      </React.Fragment>
     ));
   };
 
@@ -354,6 +389,11 @@ const LyricPage = () => {
                 onChange={handleTextSizeChange}
               />
             </TextSizeControl>
+
+            {/* Return to Top Button in Controls Box */}
+            <ReturnToTopButton onClick={scrollToTop} aria-label="Return to Top">
+              <FaArrowUp />
+            </ReturnToTopButton>
           </>
         )}
       </ControlsBox>
@@ -365,6 +405,17 @@ const LyricPage = () => {
       >
         {renderLyrics(selectedSong.lyrics)}
       </LyricsContainer>
+
+      {/* Return to Top Button at Bottom */}
+      {showBottomButton && (
+        <BottomReturnToTopButton
+          onClick={scrollToTop}
+          aria-label="Return to Top"
+        >
+          <FaArrowUp />
+          {/* You can add text here if desired */}
+        </BottomReturnToTopButton>
+      )}
 
       <DateAdded>
         Added on: {formatDate(selectedSong.date_lyrics_added)}

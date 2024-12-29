@@ -1,6 +1,6 @@
 // src/pages/LyricPage.styled.js
 import styled, { css } from "styled-components";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaArrowUp } from "react-icons/fa";
 
 // Container for the Lyric Page
 export const LyricPageContainer = styled.div`
@@ -11,6 +11,7 @@ export const LyricPageContainer = styled.div`
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative; /* For positioning Return to Top at bottom */
 `;
 
 // Header section containing title and controls
@@ -341,4 +342,68 @@ export const TranslationLine = styled.p`
   margin: 3px 0 8px 0;
   color: ${(props) => props.theme.colors.translation}; /* Least bright color */
   font-size: 1em; /* Smallest font size */
+`;
+
+// **Return to Top Button Inside Controls Box**
+export const ReturnToTopButton = styled.button`
+  background-color: #1a1a1a;
+  color: white;
+  border: none;
+  padding: 8px 12px; /* Adjusted padding for rectangular shape */
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.2em;
+  transition: background-color 0.3s, transform 0.2s;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: #333;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  @media (max-width: 768px) {
+    width: auto;
+  }
+`;
+
+// **Return to Top Button at Bottom of Page**
+export const BottomReturnToTopButton = styled.button`
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1a1a1a;
+  color: white;
+  border: none;
+  padding: 12px 24px; /* Wide rectangle shape */
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.2em;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s, transform 0.2s, opacity 0.3s;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: #333;
+    opacity: 1;
+  }
+
+  &:active {
+    transform: translateX(-50%) scale(0.95);
+  }
+
+  @media (max-width: 768px) {
+    padding: 10px 20px;
+    font-size: 1em;
+    bottom: 15px;
+  }
 `;
