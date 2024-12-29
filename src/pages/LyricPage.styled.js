@@ -90,8 +90,8 @@ export const ControlsBox = styled.div`
   align-items: center;
   gap: 10px;
   transition: transform 0.3s ease-in-out;
-  width: ${(props) => (props.isCollapsed ? "50px" : "200px")};
-  height: ${(props) => (props.isCollapsed ? "50px" : "auto")};
+  width: ${(props) => (props.$isCollapsed ? "50px" : "200px")};
+  height: ${(props) => (props.$isCollapsed ? "50px" : "auto")};
   overflow: hidden;
 
   @media (max-width: 768px) {
@@ -101,11 +101,11 @@ export const ControlsBox = styled.div`
     transform: translateX(-50%);
     flex-direction: row;
     gap: 15px;
-    width: ${(props) => (props.isCollapsed ? "50px" : "90%")};
+    width: ${(props) => (props.$isCollapsed ? "50px" : "90%")};
   }
 
   ${(props) =>
-    props.isCollapsed &&
+    props.$isCollapsed &&
     css`
       flex-direction: row;
       justify-content: center;
@@ -248,23 +248,23 @@ export const TextSizeSlider = styled.input`
 export const LyricsContainer = styled.div`
   margin-top: 40px;
   line-height: ${(props) =>
-    props.isCompact ? "1.2" : "1.8"}; /* Reduced line-height in compact mode */
+    props.$isCompact ? "1.2" : "1.8"}; /* Reduced line-height in compact mode */
   transition: all 0.5s ease-in-out; /* Increased transition duration for smoothness */
   font-size: ${(props) => props.$textSize}px;
   color: rgb(212, 210, 210);
   padding: ${(props) =>
-    props.isCompact ? "10px" : "20px"}; /* Adjust padding based on isCompact */
+    props.$isCompact ? "10px" : "20px"}; /* Adjust padding based on isCompact */
 
   &.columns-1 {
     column-count: 1;
     column-gap: ${(props) =>
-      props.isCompact ? "10px" : "20px"}; /* Adjust gap */
+      props.$isCompact ? "10px" : "20px"}; /* Adjust gap */
   }
 
   &.columns-2 {
     column-count: 2;
     column-gap: ${(props) =>
-      props.isCompact ? "20px" : "40px"}; /* Adjust gap */
+      props.$isCompact ? "20px" : "40px"}; /* Adjust gap */
     position: relative;
 
     &::before {
@@ -290,7 +290,7 @@ export const LyricsContainer = styled.div`
     &.columns-2 {
       column-count: 1; /* Revert to single column on small screens */
       column-gap: ${(props) =>
-        props.isCompact ? "10px" : "20px"}; /* Adjust gap */
+        props.$isCompact ? "10px" : "20px"}; /* Adjust gap */
     }
   }
 
@@ -308,9 +308,9 @@ export const LyricsContainer = styled.div`
 // Individual Stanza with Rectangle Bubble Styling
 export const Stanza = styled.div`
   margin-bottom: ${(props) =>
-    props.isCompact ? "10px" : "20px"}; /* Adjust margin */
+    props.$isCompact ? "10px" : "20px"}; /* Adjust margin */
   padding: ${(props) =>
-    props.isCompact ? "10px" : "20px"}; /* Adjust padding */
+    props.$isCompact ? "10px" : "20px"}; /* Adjust padding */
   background-color: rgba(
     255,
     255,
@@ -328,7 +328,7 @@ export const Stanza = styled.div`
 
   /* Reduce margins between lines */
   & > p {
-    margin: ${(props) => (props.isCompact ? "2px 0" : "5px 0")};
+    margin: ${(props) => (props.$isCompact ? "2px 0" : "5px 0")};
   }
 `;
 
@@ -352,7 +352,7 @@ export const DateAdded = styled.p`
 
 export const LyricLine = styled.p`
   margin: ${(props) =>
-    props.isCompact ? "2px 0" : "5px 0"}; /* Reduced margin in compact mode */
+    props.$isCompact ? "2px 0" : "5px 0"}; /* Reduced margin in compact mode */
   color: ${(props) => props.theme.colors.lyric}; /* Brightest color */
   font-size: ${(props) =>
     props.isCompact
@@ -363,7 +363,7 @@ export const LyricLine = styled.p`
 
 export const RomajiLine = styled.p`
   margin: ${(props) =>
-    props.isCompact ? "1px 0" : "3px 0"}; /* Reduced margin in compact mode */
+    props.$isCompact ? "1px 0" : "3px 0"}; /* Reduced margin in compact mode */
   color: ${(props) => props.theme.colors.romaji}; /* Less bright color */
   font-size: ${(props) =>
     props.isCompact

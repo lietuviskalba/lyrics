@@ -269,7 +269,7 @@ const LyricPage = () => {
 
     return stanzas.map((stanza, index) => (
       <React.Fragment key={index}>
-        <Stanza isCompact={isCompact}>
+        <Stanza $isCompact={isCompact}>
           {selectedSong.isForeign
             ? // Handle "Foreign language" songs with Lyric, Romaji, and Translation
               stanza.map((line, idx) => {
@@ -353,7 +353,7 @@ const LyricPage = () => {
       </LyricPageHeader>
 
       {/* Fixed Controls Box */}
-      <ControlsBox isCollapsed={isCollapsed}>
+      <ControlsBox $isCollapsed={isCollapsed}>
         <CollapseButton onClick={toggleControlsBox}>
           {isCollapsed ? <FaChevronRight /> : <FaChevronLeft />}
         </CollapseButton>
@@ -424,7 +424,7 @@ const LyricPage = () => {
       <LyricsContainer
         className={`columns-${columnCount}`}
         $textSize={textSize}
-        isCompact={isCompact}
+        $isCompact={isCompact}
       >
         {renderLyrics(selectedSong.lyrics)}
       </LyricsContainer>
