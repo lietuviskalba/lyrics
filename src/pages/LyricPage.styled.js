@@ -321,13 +321,18 @@ export const Stanza = styled.div`
   border-radius: 12px;
   box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
 
+  /* Prevent the stanza from being split across columns */
+  break-inside: avoid;
+  page-break-inside: avoid;
+  -webkit-column-break-inside: avoid; /* Safari */
+
   /* Reduce margins between lines */
   & > p {
     margin: ${(props) => (props.isCompact ? "2px 0" : "5px 0")};
   }
 `;
 
-// Separator between Stanzas (Removed to eliminate unwanted horizontal lines within bubbles)
+// Removed StanzaSeparator to eliminate unwanted horizontal lines within bubbles
 // export const StanzaSeparator = styled.hr`
 //   border: none;
 //   border-top: 1px solid #ccc;
