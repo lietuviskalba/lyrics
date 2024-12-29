@@ -1,6 +1,7 @@
 // src/theme.js
 export const theme = {
   colors: {
+    background: "#f0f0f0",
     primary: "#ffffff", // White text
     secondary: "#ff4d4d",
     text: "#ffffff",
@@ -13,6 +14,10 @@ export const theme = {
     songsPageBackground: "#1e1e1e",
     separator: "#999",
     separatorHover: "#ccc",
+    border: "#444444", // Borders
+    button: "#1A1A1A", // Button background
+    buttonHover: "#333333", // Button hover background
+    error: "#FF6347", // Error messages
     // Add more colors as needed
   },
   spacing: {

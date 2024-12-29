@@ -1,13 +1,20 @@
 // src/pages/LyricPage.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaColumns, FaList, FaRandom, FaPlay, FaStop } from "react-icons/fa";
+import {
+  FaColumns,
+  FaList,
+  FaRandom,
+  FaPlay,
+  FaStop,
+  FaChevronLeft,
+  FaChevronRight,
+} from "react-icons/fa";
 import YouTube from "react-youtube";
 import {
   LyricPageContainer,
   LyricPageHeader,
   SongDetails,
-  LyricPageControls,
   ControlButton,
   RandomButton,
   TextSizeControl,
@@ -15,14 +22,15 @@ import {
   TextSizeSlider,
   LyricsContainer,
   Stanza,
-  StanzaParagraph,
   StanzaSeparator,
   DateAdded,
   YouTubeContainer,
   PlayStopButton,
-  LyricLine, // Newly added
-  RomajiLine, // Newly added
-  TranslationLine, // Newly added
+  LyricLine, // Added LyricLine
+  RomajiLine,
+  TranslationLine,
+  ControlsBox,
+  CollapseButton,
 } from "./LyricPage.styled";
 
 const LyricPage = () => {
@@ -43,6 +51,7 @@ const LyricPage = () => {
   const [isPlaying, setIsPlaying] = useState(false); // State to track video playback
   const [playerReady, setPlayerReady] = useState(false); // State to track player readiness
   const [playerError, setPlayerError] = useState(false); // State to track player errors
+  const [isCollapsed, setIsCollapsed] = useState(false); // State to track ControlsBox collapse
 
   // **Ref Hook**
   const playerRef = useRef(null);
@@ -113,6 +122,10 @@ const LyricPage = () => {
 
     // Navigate to the random song's Lyric Page using useNavigate
     navigate(`/lyrics/${songs[randomIndex].id}`);
+  };
+
+  const toggleControlsBox = () => {
+    setIsCollapsed((prev) => !prev);
   };
 
   // **YouTube Video ID Extraction**
@@ -206,27 +219,32 @@ const LyricPage = () => {
     }
 
     return stanzas.map((stanza, index) => (
-      <Stanza key={index}>
-        {selectedSong.isForeign
-          ? // Handle "Other language" songs with interleaved Romaji and Translation
-            stanza.map((line, idx) => {
-              if (idx % 3 === 0) {
-                // Regular Lyric Line
-                return <LyricLine key={idx}>{line}</LyricLine>;
-              } else if (idx % 3 === 1) {
-                // Romaji Line
-                return <RomajiLine key={idx}>{line}</RomajiLine>;
-              } else if (idx % 3 === 2) {
-                // Translation Line
-                return <TranslationLine key={idx}>{line}</TranslationLine>;
-              } else {
-                return null;
-              }
-            })
-          : // Handle standard songs
-            stanza.map((line, idx) => <LyricLine key={idx}>{line}</LyricLine>)}
+      <>
+        <Stanza key={index}>
+          {selectedSong.isForeign
+            ? // Handle "Foreign language" songs with Lyric, Romaji, and Translation
+              stanza.map((line, idx) => {
+                if (idx % 3 === 0) {
+                  // Lyric Line
+                  return <LyricLine key={idx}>{line}</LyricLine>;
+                } else if (idx % 3 === 1) {
+                  // Romaji Line
+                  return <RomajiLine key={idx}>{line}</RomajiLine>;
+                } else if (idx % 3 === 2) {
+                  // Translation Line
+                  return <TranslationLine key={idx}>{line}</TranslationLine>;
+                } else {
+                  return null;
+                }
+              })
+            : // Handle standard songs
+              stanza.map((line, idx) => (
+                <RomajiLine key={idx}>{line}</RomajiLine>
+              ))}
+        </Stanza>
+        {/* Render StanzaSeparator outside the Stanza to remove unwanted horizontal lines */}
         {index < stanzas.length - 1 && <StanzaSeparator />}
-      </Stanza>
+      </>
     ));
   };
 
@@ -267,21 +285,34 @@ const LyricPage = () => {
           <h2>{selectedSong.title}</h2>
           <h3>{selectedSong.artist}</h3>
         </SongDetails>
-        <LyricPageControls>
+        <YouTubeContainer>
           {/* YouTube Player */}
           {videoId && (
-            <YouTubeContainer>
-              <YouTube
-                videoId={videoId}
-                opts={opts}
-                host="https://www.youtube-nocookie.com"
-                onReady={(event) => {
-                  playerRef.current = event.target;
-                  setPlayerReady(true);
-                }}
-                onStateChange={handlePlayerStateChange}
-                onError={handlePlayerError}
-              />
+            <YouTube
+              videoId={videoId}
+              opts={opts}
+              host="https://www.youtube-nocookie.com"
+              onReady={(event) => {
+                playerRef.current = event.target;
+                setPlayerReady(true);
+              }}
+              onStateChange={handlePlayerStateChange}
+              onError={handlePlayerError}
+            />
+          )}
+        </YouTubeContainer>
+      </LyricPageHeader>
+
+      {/* Fixed Controls Box */}
+      <ControlsBox isCollapsed={isCollapsed}>
+        <CollapseButton onClick={toggleControlsBox}>
+          {isCollapsed ? <FaChevronRight /> : <FaChevronLeft />}
+        </CollapseButton>
+
+        {!isCollapsed && (
+          <>
+            {/* Play/Stop Button */}
+            {videoId && (
               <PlayStopButton
                 onClick={isPlaying ? handleStop : handlePlay}
                 aria-label={isPlaying ? "Stop video" : "Play video"}
@@ -289,45 +320,45 @@ const LyricPage = () => {
               >
                 {isPlaying ? <FaStop /> : <FaPlay />}
               </PlayStopButton>
-            </YouTubeContainer>
-          )}
+            )}
 
-          {/* Provide feedback if no video is available */}
-          {!videoId && <p>No video available for this song.</p>}
+            {/* Random Button */}
+            <RandomButton
+              onClick={getRandomSong}
+              title="Load Random Song"
+              aria-label="Load a random song's lyrics"
+            >
+              <FaRandom />
+            </RandomButton>
 
-          {/* Random Button */}
-          <RandomButton
-            onClick={getRandomSong}
-            title="Load Random Song"
-            aria-label="Load a random song's lyrics"
-          >
-            <FaRandom />
-          </RandomButton>
+            {/* Column Toggle Button */}
+            <ControlButton
+              onClick={toggleColumns}
+              title="Toggle Columns"
+              aria-label="Toggle between single and double column layout"
+            >
+              {columnCount === 1 ? <FaColumns /> : <FaList />}
+            </ControlButton>
 
-          {/* Column Toggle Button */}
-          <ControlButton
-            onClick={toggleColumns}
-            title="Toggle Columns"
-            aria-label="Toggle between single and double column layout"
-          >
-            {columnCount === 1 ? <FaColumns /> : <FaList />}
-          </ControlButton>
+            {/* Text Size Slider */}
+            <TextSizeControl>
+              <TextSizeLabel htmlFor="text-size-slider">
+                Text Size
+              </TextSizeLabel>
+              <TextSizeSlider
+                type="range"
+                id="text-size-slider"
+                min="12"
+                max="24"
+                value={textSize}
+                onChange={handleTextSizeChange}
+              />
+            </TextSizeControl>
+          </>
+        )}
+      </ControlsBox>
 
-          {/* Text Size Slider */}
-          <TextSizeControl>
-            <TextSizeLabel htmlFor="text-size-slider">Text Size</TextSizeLabel>
-            <TextSizeSlider
-              type="range"
-              id="text-size-slider"
-              min="12"
-              max="24"
-              value={textSize}
-              onChange={handleTextSizeChange}
-            />
-          </TextSizeControl>
-        </LyricPageControls>
-      </LyricPageHeader>
-
+      {/* Lyrics Section */}
       <LyricsContainer
         className={`columns-${columnCount}`}
         $textSize={textSize}

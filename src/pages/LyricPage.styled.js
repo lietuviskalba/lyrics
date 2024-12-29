@@ -1,12 +1,16 @@
 // src/pages/LyricPage.styled.js
-import styled from "styled-components";
+import styled, { css } from "styled-components";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 // Container for the Lyric Page
 export const LyricPageContainer = styled.div`
   margin: 20px;
   color: #333;
   background-color: ${(props) => props.theme.colors.background};
-  font-family: Arial, sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
 // Header section containing title and controls
@@ -16,34 +20,108 @@ export const LyricPageHeader = styled.div`
   align-items: center;
   flex-wrap: wrap; /* Allows wrapping on smaller screens */
   color: ${(props) => props.theme.colors.text};
+  margin-bottom: 20px; /* Added spacing below the header */
 `;
 
 // Details about the song (title and artist)
 export const SongDetails = styled.div`
-  /* Additional styles can be added here if needed */
+  text-align: left;
+
   h2 {
     margin: 0;
-    font-size: 2em;
+    font-size: 3em; /* Further increased font size */
     color: ${(props) => props.theme.colors.primary};
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
+    font-weight: bold; /* Bold text */
   }
 
   h3 {
-    margin: 5px 0 0 0;
-    font-weight: normal;
+    margin: 10px 0 0 0; /* Added top margin for spacing */
+    font-weight: bold; /* Bold text */
     color: ${(props) => props.theme.colors.secondaryText};
+    font-size: 2em; /* Further increased font size */
   }
 `;
 
-// Controls container (YouTube Player, Random Button, Column Toggle, Text Size)
-export const LyricPageControls = styled.div`
+// Container for YouTube Player
+export const YouTubeContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin-top: 10px; /* Adds spacing on smaller screens */
+  justify-content: center; /* Center the YouTube player */
+  margin: 0 auto; /* Center horizontally */
+  flex: 1; /* Allow it to grow and center within the header */
 
-  @media (max-width: 600px) {
-    flex-direction: column;
-    align-items: flex-start;
+  iframe {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border: 2px solid #ccc; /* Added subtle border */
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    margin-top: 20px;
+  }
+`;
+
+// Fixed Controls Box
+export const ControlsBox = styled.div`
+  position: fixed;
+  top: 80px; /* Adjust based on your navbar height */
+  right: 20px;
+  background-color: rgba(
+    26,
+    26,
+    26,
+    0.9
+  ); /* Semi-transparent dark background */
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  z-index: 1000; /* Ensures the box stays above other elements */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.3s ease-in-out;
+  width: ${(props) => (props.isCollapsed ? "50px" : "200px")};
+  height: ${(props) => (props.isCollapsed ? "50px" : "auto")};
+  overflow: hidden;
+
+  @media (max-width: 768px) {
+    top: auto;
+    bottom: 20px;
+    right: 50%;
+    transform: translateX(50%);
+    flex-direction: row;
+    gap: 15px;
+    width: ${(props) => (props.isCollapsed ? "50px" : "90%")};
+  }
+
+  ${(props) =>
+    props.isCollapsed &&
+    css`
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      height: 50px;
+      padding: 10px;
+    `}
+`;
+
+// Collapse/Expand Button
+export const CollapseButton = styled.button`
+  background-color: transparent;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease-in-out;
+
+  &:hover {
+    color: ${(props) => props.theme.colors.primary};
   }
 `;
 
@@ -52,11 +130,16 @@ export const ControlButton = styled.button`
   background-color: #1a1a1a;
   color: white;
   border: none;
-  padding: 8px;
-  border-radius: 4px;
+  padding: 10px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 1.2em;
   transition: background-color 0.3s, transform 0.2s;
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     background-color: #333;
@@ -65,6 +148,10 @@ export const ControlButton = styled.button`
   &:active {
     transform: scale(0.95);
   }
+
+  @media (max-width: 768px) {
+    width: auto;
+  }
 `;
 
 // Random Button
@@ -72,11 +159,46 @@ export const RandomButton = styled.button`
   background-color: #1a1a1a;
   color: white;
   border: none;
-  padding: 8px;
-  border-radius: 4px;
+  padding: 10px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 1.2em;
   transition: background-color 0.3s, transform 0.2s;
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: #333;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  @media (max-width: 768px) {
+    width: auto;
+  }
+`;
+
+// Play/Stop Button
+export const PlayStopButton = styled.button`
+  background-color: #1a1a1a;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s, transform 0.2s;
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     background-color: #333;
@@ -92,6 +214,11 @@ export const TextSizeControl = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    width: auto;
+  }
 `;
 
 // Label for Text Size Slider
@@ -102,19 +229,25 @@ export const TextSizeLabel = styled.label`
 
 // Text Size Slider
 export const TextSizeSlider = styled.input`
-  width: 150px;
+  width: 100%;
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    width: 100px;
+  }
 `;
 
-// Container for Lyrics
+// Container for Lyrics with Enhanced Transitions
 export const LyricsContainer = styled.div`
-  margin-top: 20px;
-  line-height: 1.6;
-  transition: all 0.3s ease-in-out; /* Smooth transition for layout changes */
+  margin-top: 40px;
+  line-height: 1.8;
+  transition: all 0.5s ease-in-out; /* Increased transition duration for smoothness */
   font-size: ${(props) => props.$textSize}px;
   color: rgb(212, 210, 210);
 
   &.columns-1 {
     column-count: 1;
+    column-gap: 20px;
   }
 
   &.columns-2 {
@@ -131,16 +264,20 @@ export const LyricsContainer = styled.div`
       height: 100%;
       background-color: #ccc;
       transform: translateX(-50%);
+      transition: opacity 0.5s ease-in-out; /* Smooth transition for separator */
+      opacity: 1;
     }
   }
 
   @media (max-width: 768px) {
     &.columns-2::before {
       display: none; /* Remove the vertical separator on small screens */
+      opacity: 0;
     }
 
     &.columns-2 {
       column-count: 1; /* Revert to single column on small screens */
+      column-gap: 20px;
     }
   }
 
@@ -155,17 +292,22 @@ export const LyricsContainer = styled.div`
   }
 `;
 
-// Individual Stanza
+// Individual Stanza with Rectangle Bubble Styling
 export const Stanza = styled.div`
   margin-bottom: 20px;
+  padding: 20px;
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.1
+  ); /* Light semi-transparent background */
+  border: 2px solid #444; /* Thicker dark border for contrast */
+  border-radius: 12px;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
 `;
 
-// Paragraph within a Stanza
-export const StanzaParagraph = styled.p`
-  margin-bottom: 10px;
-`;
-
-// Separator between Stanzas
+// Separator between Stanzas (Removed to eliminate unwanted horizontal lines within bubbles)
 export const StanzaSeparator = styled.hr`
   border: none;
   border-top: 1px solid #ccc;
@@ -174,64 +316,29 @@ export const StanzaSeparator = styled.hr`
 
 // Date Added Information
 export const DateAdded = styled.p`
-  margin-top: 20px;
-  font-size: 0.9em;
-  color: #666;
-`;
-
-// Container for YouTube Player and Play/Stop Button
-export const YouTubeContainer = styled.div`
-  display: flex;
-  align-items: center;
-  margin-right: 15px; /* Space between YouTube player and Random button */
-
-  @media (max-width: 600px) {
-    margin-right: 0;
-    margin-bottom: 10px;
-  }
-`;
-
-// Play/Stop Button
-export const PlayStopButton = styled.button`
-  margin-left: 10px;
-  background-color: #1a1a1a;
-  color: white;
-  border: none;
-  padding: 8px;
-  border-radius: 50%;
-  cursor: pointer;
+  margin-top: 30px;
   font-size: 1em;
-  transition: background-color 0.3s, transform 0.2s;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  &:hover {
-    background-color: #333;
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
+  color: #666;
+  text-align: right;
 `;
 
-// **New Styled Components for Lyrics**
+// **Styled Components for Lyrics**
 
 export const LyricLine = styled.p`
   margin: 5px 0;
-  color: ${(props) => props.theme.colors.text};
-  font-size: 1.5em;
+  color: ${(props) => props.theme.colors.lyric}; /* Brightest color */
+  font-size: 1.5em; /* Largest font size */
+  font-weight: bold;
 `;
 
 export const RomajiLine = styled.p`
-  margin: 3px 0 5px 0;
-  color: ${(props) => props.theme.colors.romaji};
-  font-size: 0.8em;
+  margin: 3px 0;
+  color: ${(props) => props.theme.colors.romaji}; /* Less bright color */
+  font-size: 1.2em; /* Medium font size */
 `;
 
 export const TranslationLine = styled.p`
-  margin: 0 0 10px 0;
-  color: ${(props) => props.theme.colors.translation};
-  font-size: 0.6em;
+  margin: 3px 0 8px 0;
+  color: ${(props) => props.theme.colors.translation}; /* Least bright color */
+  font-size: 1em; /* Smallest font size */
 `;
