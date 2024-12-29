@@ -3,34 +3,33 @@ import styled from "styled-components";
 
 // Container for the Songs Page
 export const SongsPageContainer = styled.div`
-  padding: 10px 20px 20px 20px; /* Top, Right, Bottom, Left */
+  padding: 20px;
   font-family: Arial, sans-serif;
   color: #333;
-  background-color: ${(props) => props.theme.colors.songsPageBackground};
+  background-color: ${(props) =>
+    props.theme.colors.songsPageBackground || "#f5f5f5"};
 `;
 
 // Title for the Songs Page
 export const SongsPageTitle = styled.h1`
   text-align: center;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  color: ${(props) => props.theme.colors.text};
+  margin: 20px 0;
+  color: ${(props) => props.theme.colors.text || "#333"};
 `;
 
 // Container for SearchBar and Checkbox with Separator
 export const ControlsContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* Align items to the start */
-  gap: 1cm; /* 1 centimeter gap between SearchBar and Separator */
-  max-width: 800px; /* Limit the maximum width to prevent checkbox from touching the right edge */
-  margin: 0 auto; /* Center the container horizontally */
-  margin-bottom: 20px; /* Space below the controls */
+  justify-content: center; /* Centered for better aesthetics */
+  gap: 1cm;
+  max-width: 800px;
+  margin: 0 auto 20px auto;
 
   @media (max-width: 768px) {
-    flex-direction: column; /* Stack controls vertically on small screens */
+    flex-direction: column;
     gap: 10px;
-    max-width: 100%; /* Full width on small screens */
+    max-width: 100%;
   }
 `;
 
@@ -42,7 +41,7 @@ export const CheckboxContainer = styled.div`
 
 // Styled Checkbox Input
 export const CheckboxInput = styled.input`
-  margin-right: 8px; /* Space between checkbox and label */
+  margin-right: 8px;
   width: 16px;
   height: 16px;
   cursor: pointer;
@@ -51,78 +50,73 @@ export const CheckboxInput = styled.input`
 // Styled Checkbox Label
 export const CheckboxLabel = styled.label`
   font-size: 1em;
-  color: ${(props) => props.theme.colors.text};
+  color: ${(props) => props.theme.colors.text || "#333"};
   cursor: pointer;
 `;
 
 // Vertical Separator
 export const VerticalSeparator = styled.div`
-  width: 1px; /* Thin vertical line */
-  height: 24px; /* Height to match the search bar and checkbox */
-  background-color: ${(props) => props.theme.colors.separator};
+  width: 1px;
+  height: 24px;
+  background-color: ${(props) => props.theme.colors.separator || "#ccc"};
 
   @media (max-width: 768px) {
-    width: 80%; /* Reduce width on small screens */
-    height: 1px; /* Change to horizontal line */
-    background-color: ${(props) => props.theme.colors.separator};
+    width: 80%;
+    height: 1px;
+    background-color: ${(props) => props.theme.colors.separator || "#ccc"};
   }
 `;
 
 // List of songs using CSS Grid
 export const SongList = styled.ul`
-  list-style: none; /* Remove default bullets */
+  list-style: none;
   padding: 0;
   display: grid;
-  grid-template-columns: 1fr auto; /* Two columns: SongBox and SongImage */
-  gap: 0px;
-  width: auto; /* Allow grid to size based on content */
-  margin: 0 auto; /* Center the list */
-  border-spacing: 0; /* Remove default spacing */
+  grid-auto-rows: auto;
+  gap: 10px;
+  width: fit-content; /* Adjust based on content */
+  margin: 0 auto;
 `;
 
-// Individual song item as a grid row
+// Individual song item as a grid row with two columns
 export const SongItem = styled.li`
-  display: contents; /* Allow children to define their own grid areas */
-  cursor: pointer;
+  display: grid;
+  grid-template-columns: 1fr 80px; /* SongBox and SongImage */
+  align-items: center;
   background-color: #343131;
   color: #fff;
   border: 1px solid #67676783;
   border-radius: 4px;
+  padding: 15px;
   transition: background-color 0.3s, box-shadow 0.3s;
 
   &:hover {
-    background-color: #727272; /* Darker grey on hover */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Subtle glow effect */
+    background-color: #727272;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   }
 
   @media (max-width: 768px) {
-    display: flex;
-    flex-direction: column; /* Stack SongBox and SongImage vertically on small screens */
-    align-items: flex-start;
+    grid-template-columns: 1fr; /* Stack vertically */
     padding: 10px;
-    grid-template-columns: 1fr; /* Single column on small screens */
   }
 `;
 
 // Container for song title and artist
 export const SongBox = styled.div`
-  grid-column: 1 / 2; /* Position in first column */
-  padding: 15px;
   display: flex;
   flex-direction: column;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal; /* Allows text to wrap */
+  overflow: visible; /* Ensures content is visible */
 
   h3 {
     margin: 0;
     font-size: 1.2em;
-    color: ${(props) => props.theme.colors.text};
+    color: #fff;
   }
 
   p {
     margin: 5px 0 0 0;
-    color: ${(props) => props.theme.colors.secondaryText};
+    color: #ddd;
   }
 
   @media (max-width: 768px) {
@@ -133,10 +127,9 @@ export const SongBox = styled.div`
 
 // Container for song image
 export const SongImage = styled.div`
-  grid-column: 2 / 3; /* Position in second column */
-  padding: 15px;
-  width: 80px; /* Fixed width */
-  height: 80px; /* Fixed height */
+  padding: 0 15px;
+  width: 80px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -144,18 +137,18 @@ export const SongImage = styled.div`
   img {
     width: 80px;
     height: 80px;
-    object-fit: cover; /* Ensure the image covers the container without distortion */
-    border-radius: 5px; /* Rounded corners for the image */
-    border: 1px solid #ccc; /* Optional: Add a border around the image */
+    object-fit: cover;
+    border-radius: 5px;
+    border: 1px solid #ccc;
   }
 
   @media (max-width: 768px) {
-    width: 100%; /* Make image responsive on small screens */
-    height: auto; /* Allow height to adjust based on image aspect ratio */
+    width: 100%;
+    height: auto;
 
     img {
       width: 100%;
-      height: auto; /* Maintain aspect ratio */
+      height: auto;
     }
   }
 `;
@@ -163,8 +156,7 @@ export const SongImage = styled.div`
 // Styled component for "No songs found" message
 export const NoSongsMessage = styled.p`
   font-size: 1em;
-  color: ${(props) =>
-    props.theme.colors.error}; /* Use error color for better visibility */
+  color: #ff4d4f; /* Red color for visibility */
   text-align: center;
   margin-top: 20px;
 `;

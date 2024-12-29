@@ -27,7 +27,12 @@ const SongsPage = () => {
   // Fetch songs when the component loads
   useEffect(() => {
     fetch("http://localhost:5000/api/songs")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => {
         setSongs(data);
         setLoading(false); // Set loading to false after data is fetched
