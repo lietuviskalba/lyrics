@@ -5,6 +5,11 @@ import SearchBar from "../components/SearchBar";
 import {
   SongsPageContainer,
   SongsPageTitle,
+  ControlsContainer,
+  CheckboxContainer,
+  CheckboxLabel,
+  CheckboxInput,
+  VerticalSeparator, // New styled component
   SongList,
   SongItem,
   SongBox,
@@ -16,6 +21,7 @@ const SongsPage = () => {
   const [songs, setSongs] = useState([]);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [isForeignOnly, setIsForeignOnly] = useState(false); // State for checkbox
   const [loading, setLoading] = useState(true); // State for loading
 
   // Fetch songs when the component loads
@@ -63,68 +69,82 @@ const SongsPage = () => {
       });
   };
 
+  // Handle checkbox toggle
+  const handleCheckboxChange = (e) => {
+    setIsForeignOnly(e.target.checked);
+  };
+
+  // Filter songs based on search term and foreign checkbox
+  const filteredSongs = songs.filter((song) => {
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    const matchesSearch =
+      song.title.toLowerCase().includes(lowerSearchTerm) ||
+      song.artist.toLowerCase().includes(lowerSearchTerm);
+    const matchesForeign = isForeignOnly ? song.isForeign : true;
+    return matchesSearch && matchesForeign;
+  });
+
   return (
     <SongsPageContainer>
       <SongsPageTitle>All Songs</SongsPageTitle>
-      <SearchBar
-        placeholder="Search songs or artists..."
-        onSearch={(query) => setSearchTerm(query)}
-        initialValue={searchTerm}
-        fullWidth={false}
-      />
+      {/* Controls Container: SearchBar and Foreign Songs Checkbox with Separator */}
+      <ControlsContainer>
+        <SearchBar
+          placeholder="Search songs or artists..."
+          onSearch={(query) => setSearchTerm(query)}
+          initialValue={searchTerm}
+          fullWidth={false}
+        />
+        <VerticalSeparator />
+        <CheckboxContainer>
+          <CheckboxInput
+            type="checkbox"
+            id="foreign-songs"
+            checked={isForeignOnly}
+            onChange={handleCheckboxChange}
+          />
+          <CheckboxLabel htmlFor="foreign-songs">Foreign Songs</CheckboxLabel>
+        </CheckboxContainer>
+      </ControlsContainer>
       {loading ? (
         <p>Loading songs...</p>
       ) : (
         <SongList>
-          {songs.length === 0 ? (
-            <NoSongsMessage>No songs available.</NoSongsMessage>
-          ) : songs.filter((song) => {
-              const lowerSearchTerm = searchTerm.toLowerCase();
-              return (
-                song.title.toLowerCase().includes(lowerSearchTerm) ||
-                song.artist.toLowerCase().includes(lowerSearchTerm)
-              );
-            }).length === 0 ? (
-            <NoSongsMessage>No songs found.</NoSongsMessage>
+          {filteredSongs.length === 0 ? (
+            <NoSongsMessage>
+              {songs.length === 0 ? "No songs available." : "No songs found."}
+            </NoSongsMessage>
           ) : (
-            songs
-              .filter((song) => {
-                const lowerSearchTerm = searchTerm.toLowerCase();
-                return (
-                  song.title.toLowerCase().includes(lowerSearchTerm) ||
-                  song.artist.toLowerCase().includes(lowerSearchTerm)
-                );
-              })
-              .map((song) => (
-                <SongItem
-                  key={song.id}
-                  onClick={() => handleSongClick(song)}
-                  tabIndex="0" // Makes the item focusable
-                  onKeyPress={(e) => {
-                    if (e.key === "Enter") {
-                      handleSongClick(song);
-                    }
-                  }}
-                >
-                  <SongBox>
-                    <h3>{song.title}</h3>
-                    <p>{song.artist}</p>
-                  </SongBox>
-                  {song.image && (
-                    <SongImage>
-                      <img
-                        src={`http://localhost:5000${song.image}`} // Ensure the image path is correct
-                        alt={`${song.title} cover`}
-                        loading="lazy"
-                        onError={(e) => {
-                          e.target.onerror = null; // Prevent infinite loop if fallback fails
-                          e.target.src = "/images/default.jpg"; // Path to your default image
-                        }}
-                      />
-                    </SongImage>
-                  )}
-                </SongItem>
-              ))
+            filteredSongs.map((song) => (
+              <SongItem
+                key={song.id}
+                onClick={() => handleSongClick(song)}
+                tabIndex="0" // Makes the item focusable
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    handleSongClick(song);
+                  }
+                }}
+              >
+                <SongBox>
+                  <h3>{song.title}</h3>
+                  <p>{song.artist}</p>
+                </SongBox>
+                {song.image && (
+                  <SongImage>
+                    <img
+                      src={`http://localhost:5000${song.image}`} // Ensure the image path is correct
+                      alt={`${song.title} cover`}
+                      loading="lazy"
+                      onError={(e) => {
+                        e.target.onerror = null; // Prevent infinite loop if fallback fails
+                        e.target.src = "/images/default.jpg"; // Path to your default image
+                      }}
+                    />
+                  </SongImage>
+                )}
+              </SongItem>
+            ))
           )}
         </SongList>
       )}
