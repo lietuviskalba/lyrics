@@ -328,12 +328,12 @@ export const Stanza = styled.div`
 `;
 
 // Separator between Stanzas (Removed to eliminate unwanted horizontal lines within bubbles)
-export const StanzaSeparator = styled.hr`
-  border: none;
-  border-top: 1px solid #ccc;
-  margin: ${(props) =>
-    props.isCompact ? "5px 0" : "10px 0"}; /* Reduced margin in compact mode */
-`;
+// export const StanzaSeparator = styled.hr`
+//   border: none;
+//   border-top: 1px solid #ccc;
+//   margin: ${(props) =>
+//     props.isCompact ? "5px 0" : "10px 0"}; /* Reduced margin in compact mode */
+// `;
 
 // Date Added Information
 export const DateAdded = styled.p`

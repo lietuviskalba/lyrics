@@ -25,7 +25,6 @@ import {
   TextSizeSlider,
   LyricsContainer,
   Stanza,
-  StanzaSeparator,
   DateAdded,
   YouTubeContainer,
   PlayStopButton,
@@ -289,11 +288,10 @@ const LyricPage = () => {
               })
             : // Handle standard songs
               stanza.map((line, idx) => (
-                <RomajiLine key={idx}>{line}</RomajiLine>
+                <LyricLine key={idx}>{line}</LyricLine> // Changed from RomajiLine to LyricLine
               ))}
         </Stanza>
-        {/* Render StanzaSeparator outside the Stanza to remove unwanted horizontal lines */}
-        {index < stanzas.length - 1 && <StanzaSeparator />}
+        {/* Removed StanzaSeparator */}
       </React.Fragment>
     ));
   };
