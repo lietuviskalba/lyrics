@@ -68,30 +68,27 @@ export const VerticalSeparator = styled.div`
   }
 `;
 
-// List of songs using Flexbox
+// List of songs using CSS Grid
 export const SongList = styled.ul`
   list-style: none; /* Remove default bullets */
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* Align items to start to determine container width based on content */
-  max-width: 1000px; /* Optional: Limit the maximum width */
+  display: grid;
+  grid-template-columns: 1fr auto; /* Two columns: SongBox and SongImage */
+  gap: 0px;
+  width: auto; /* Allow grid to size based on content */
   margin: 0 auto; /* Center the list */
+  border-spacing: 0; /* Remove default spacing */
 `;
 
-// Individual song item as a flex container
+// Individual song item as a grid row
 export const SongItem = styled.li`
-  display: flex;
-  justify-content: space-between; /* Space between SongBox and SongImage */
-  align-items: center; /* Vertically center items */
-  background-color: #343131; /* Dark background for better contrast */
-  color: #fff; /* White text for visibility */
-  padding: 15px;
+  display: contents; /* Allow children to define their own grid areas */
+  cursor: pointer;
+  background-color: #343131;
+  color: #fff;
   border: 1px solid #67676783;
   border-radius: 4px;
-  cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
-  width: 100%; /* Inherit width from SongList */
 
   &:hover {
     background-color: #727272; /* Darker grey on hover */
@@ -99,48 +96,47 @@ export const SongItem = styled.li`
   }
 
   @media (max-width: 768px) {
+    display: flex;
     flex-direction: column; /* Stack SongBox and SongImage vertically on small screens */
-    align-items: flex-start; /* Align items to the start */
+    align-items: flex-start;
     padding: 10px;
+    grid-template-columns: 1fr; /* Single column on small screens */
   }
 `;
 
 // Container for song title and artist
 export const SongBox = styled.div`
+  grid-column: 1 / 2; /* Position in first column */
+  padding: 15px;
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* Allow SongBox to take available space */
-  margin-right: 20px; /* Space between SongBox and SongImage */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   h3 {
     margin: 0;
     font-size: 1.2em;
     color: ${(props) => props.theme.colors.text};
-    white-space: nowrap; /* Prevent text from wrapping */
-    overflow: hidden; /* Hide overflow text */
-    text-overflow: ellipsis; /* Add ellipsis for overflow text */
   }
 
   p {
     margin: 5px 0 0 0;
     color: ${(props) => props.theme.colors.secondaryText};
-    white-space: nowrap; /* Prevent text from wrapping */
-    overflow: hidden; /* Hide overflow text */
-    text-overflow: ellipsis; /* Add ellipsis for overflow text */
   }
 
   @media (max-width: 768px) {
-    margin-right: 0; /* Remove right margin on small screens */
-    margin-bottom: 10px; /* Add bottom margin for spacing */
-    width: 100%; /* Full width on small screens */
+    padding: 10px 0;
+    width: 100%;
   }
 `;
 
 // Container for song image
 export const SongImage = styled.div`
+  grid-column: 2 / 3; /* Position in second column */
+  padding: 15px;
   width: 80px; /* Fixed width */
   height: 80px; /* Fixed height */
-  flex-shrink: 0; /* Prevent image from shrinking */
   display: flex;
   align-items: center;
   justify-content: center;

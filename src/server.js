@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
-import songRoutes from "../src//routes/songRoutes.js";
+import songRoutes from "./routes/songRoutes.js"; // Corrected import path
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
