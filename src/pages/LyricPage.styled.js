@@ -19,15 +19,20 @@ export const LyricPageHeader = styled.div`
 
 // Details about the song (title and artist)
 export const SongDetails = styled.div`
-  /* Styles for song title and artist */
+  /* Additional styles can be added here if needed */
 `;
 
-// Controls container (Random Button, Column Toggle, Text Size)
+// Controls container (YouTube Player, Random Button, Column Toggle, Text Size)
 export const LyricPageControls = styled.div`
   display: flex;
   align-items: center;
   gap: 15px;
   margin-top: 10px; /* Adds spacing on smaller screens */
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 `;
 
 // Control Button (Column Toggle)
@@ -60,7 +65,6 @@ export const RandomButton = styled.button`
   cursor: pointer;
   font-size: 1.2em;
   transition: background-color 0.3s, transform 0.2s;
-  margin-right: 10px; /* Space between buttons */
 
   &:hover {
     background-color: #333;
@@ -161,4 +165,41 @@ export const DateAdded = styled.p`
   margin-top: 20px;
   font-size: 0.9em;
   color: #666;
+`;
+
+// Container for YouTube Player and Play/Stop Button
+export const YouTubeContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: 15px; /* Space between YouTube player and Random button */
+
+  @media (max-width: 600px) {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+`;
+
+// Play/Stop Button
+export const PlayStopButton = styled.button`
+  margin-left: 10px;
+  background-color: #1a1a1a;
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.3s, transform 0.2s;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: #333;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
 `;

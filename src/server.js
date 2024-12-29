@@ -26,6 +26,12 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "Server is healthy" });
 });
 
+// Error handling middleware (optional but recommended)
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
+});
+
 // Start the server
 const PORT = 5000;
 app.listen(PORT, () =>

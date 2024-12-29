@@ -1,14 +1,15 @@
 // src/pages/LyricPage.jsx
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { FaColumns, FaList, FaRandom } from "react-icons/fa"; // Import FaRandom
+import React, { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { FaColumns, FaList, FaRandom, FaPlay, FaStop } from "react-icons/fa";
+import YouTube from "react-youtube";
 import {
   LyricPageContainer,
   LyricPageHeader,
   SongDetails,
   LyricPageControls,
   ControlButton,
-  RandomButton, // Import RandomButton
+  RandomButton,
   TextSizeControl,
   TextSizeLabel,
   TextSizeSlider,
@@ -17,37 +18,68 @@ import {
   StanzaParagraph,
   StanzaSeparator,
   DateAdded,
+  YouTubeContainer,
+  PlayStopButton,
 } from "./LyricPage.styled";
 
 const LyricPage = () => {
-  const location = useLocation();
-  const [selectedSong, setSelectedSong] = useState(
-    location.state?.selectedSong || null
-  );
-  const [songs, setSongs] = useState([]); // New state for songs list
+  const { id } = useParams(); // Extract the song ID from the URL
+  const navigate = useNavigate();
 
-  // Initialize columnCount and textSize with localStorage or defaults
+  // **State Hooks**
+  const [selectedSong, setSelectedSong] = useState(null);
+  const [songs, setSongs] = useState([]);
   const [columnCount, setColumnCount] = useState(() => {
     const saved = localStorage.getItem("columnCount");
     return saved ? parseInt(saved, 10) : 1;
   });
-
   const [textSize, setTextSize] = useState(() => {
     const saved = localStorage.getItem("textSize");
     return saved ? parseInt(saved, 10) : 16;
   });
+  const [isPlaying, setIsPlaying] = useState(false); // State to track video playback
+  const [playerReady, setPlayerReady] = useState(false); // State to track player readiness
+  const [playerError, setPlayerError] = useState(false); // State to track player errors
 
-  // Persist columnCount to localStorage
+  // **Ref Hook**
+  const playerRef = useRef(null);
+
+  // **Effect Hooks**
   useEffect(() => {
     localStorage.setItem("columnCount", columnCount);
   }, [columnCount]);
 
-  // Persist textSize to localStorage
   useEffect(() => {
     localStorage.setItem("textSize", textSize);
   }, [textSize]);
 
-  // Utility to format date
+  useEffect(() => {
+    // Fetch all songs to populate the songs list for random selection
+    fetch("http://localhost:5000/api/songs")
+      .then((res) => res.json())
+      .then((songsData) => setSongs(songsData))
+      .catch((err) => console.error("Error fetching songs:", err));
+  }, []);
+
+  useEffect(() => {
+    if (id) {
+      // Fetch the specific song based on the ID from the URL
+      fetch(`http://localhost:5000/api/songs/${id}`)
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Song not found");
+          }
+          return res.json();
+        })
+        .then((songData) => setSelectedSong(songData))
+        .catch((err) => {
+          console.error("Error fetching song:", err);
+          setSelectedSong({ error: true });
+        });
+    }
+  }, [id]);
+
+  // **Utility Function**
   const formatDate = (timestamp) => {
     const date = new Date(timestamp);
     const yyyy = date.getFullYear();
@@ -58,38 +90,15 @@ const LyricPage = () => {
     return `${yyyy}/${mm}/${dd}-${hh}:${min}`;
   };
 
-  // Fetch the song details if no song is selected
-  useEffect(() => {
-    if (!selectedSong) {
-      fetch("http://localhost:5000/api/songs")
-        .then((res) => res.json())
-        .then((songsData) => {
-          if (songsData.length > 0) {
-            setSongs(songsData); // Store songs in state
-            setSelectedSong(songsData[0]);
-          }
-        })
-        .catch((err) => console.error("Error fetching songs:", err));
-    } else {
-      // If a song is already selected (e.g., via navigation), fetch all songs to have access for random selection
-      fetch("http://localhost:5000/api/songs")
-        .then((res) => res.json())
-        .then((songsData) => setSongs(songsData))
-        .catch((err) => console.error("Error fetching songs:", err));
-    }
-  }, [selectedSong]);
-
-  // Handler to toggle column count
+  // **Event Handlers**
   const toggleColumns = () => {
     setColumnCount((prevCount) => (prevCount === 1 ? 2 : 1));
   };
 
-  // Handler to adjust text size
   const handleTextSizeChange = (e) => {
     setTextSize(e.target.value);
   };
 
-  // Handler to load a random song
   const getRandomSong = () => {
     if (songs.length === 0) return;
     if (songs.length === 1) return; // Only one song available
@@ -99,22 +108,82 @@ const LyricPage = () => {
       randomIndex = Math.floor(Math.random() * songs.length);
     } while (songs[randomIndex].id === selectedSong.id);
 
-    setSelectedSong(songs[randomIndex]);
+    // Navigate to the random song's Lyric Page using useNavigate
+    navigate(`/lyrics/${songs[randomIndex].id}`);
   };
 
-  // Handler for song item click (navigate to another page or other actions)
-  const handleSongClick = (song) => {
-    // Implement navigation to lyric page or other desired behavior
-    // For example:
-    window.location.href = `/lyrics/${song.id}`;
+  // **YouTube Video ID Extraction**
+  const getYouTubeVideoId = (url) => {
+    try {
+      const parsedUrl = new URL(url);
+      if (parsedUrl.hostname === "youtu.be") {
+        return parsedUrl.pathname.slice(1);
+      } else if (
+        parsedUrl.hostname === "www.youtube.com" ||
+        parsedUrl.hostname === "youtube.com"
+      ) {
+        return parsedUrl.searchParams.get("v");
+      }
+      return null;
+    } catch (err) {
+      console.error("Invalid YouTube URL:", err);
+      return null;
+    }
   };
 
-  // Function to render lyrics with stanza separators
+  // **Playback Handlers**
+  const handlePlay = () => {
+    if (playerRef.current) {
+      playerRef.current.playVideo();
+      setIsPlaying(true);
+    } else {
+      console.warn("Player is not ready yet.");
+    }
+  };
+
+  const handleStop = () => {
+    if (playerRef.current) {
+      playerRef.current.stopVideo();
+      setIsPlaying(false);
+    } else {
+      console.warn("Player is not ready yet.");
+    }
+  };
+
+  // **YouTube Player Options**
+  const opts = {
+    height: "150", // Minimal visible size to avoid ad blockers
+    width: "300",
+    playerVars: {
+      autoplay: 1,
+      controls: 0, // Hide controls if desired
+      disablekb: 1, // Disable keyboard controls
+      modestbranding: 1, // Minimal YouTube branding
+      rel: 0, // Do not show related videos
+    },
+  };
+
+  // **YouTube Player State Change Handler**
+  const handlePlayerStateChange = (event) => {
+    if (event.data === window.YT.PlayerState.PLAYING) {
+      setIsPlaying(true);
+    } else {
+      setIsPlaying(false);
+    }
+  };
+
+  // **YouTube Player Error Handler**
+  const handlePlayerError = (event) => {
+    console.error("YouTube Player Error:", event.data);
+    setPlayerError(true);
+  };
+
+  // **Lyrics Rendering Function**
   const renderLyrics = (lyrics) => {
     const stanzas = [];
     let currentStanza = [];
 
-    lyrics.forEach((line, index) => {
+    lyrics.forEach((line) => {
       if (line.trim() === "") {
         if (currentStanza.length > 0) {
           stanzas.push(currentStanza);
@@ -125,7 +194,6 @@ const LyricPage = () => {
       }
     });
 
-    // Push the last stanza if exists
     if (currentStanza.length > 0) {
       stanzas.push(currentStanza);
     }
@@ -135,28 +203,40 @@ const LyricPage = () => {
         {stanza.map((line, idx) => (
           <StanzaParagraph key={idx}>{line}</StanzaParagraph>
         ))}
-        {/* Add a horizontal line after each stanza except the last */}
         {index < stanzas.length - 1 && <StanzaSeparator />}
       </Stanza>
     ));
   };
 
-  // Handle cases where no songs are available
-  if (songs.length === 0) {
+  // **Conditional Rendering Messages**
+  if (playerError) {
     return (
       <LyricPageContainer>
-        <p>No songs available.</p>
+        <p>
+          Unable to play the video. Please try disabling your ad blocker or
+          check your network connection.
+        </p>
       </LyricPageContainer>
     );
   }
 
-  // If no selectedSong is set after fetching, show loading
-  if (!selectedSong)
+  if (!selectedSong) {
     return (
       <LyricPageContainer>
         <p>Loading song...</p>
       </LyricPageContainer>
     );
+  }
+
+  if (selectedSong.error) {
+    return (
+      <LyricPageContainer>
+        <p>Song not found.</p>
+      </LyricPageContainer>
+    );
+  }
+
+  const videoId = selectedSong.url ? getYouTubeVideoId(selectedSong.url) : null;
 
   return (
     <LyricPageContainer>
@@ -166,6 +246,33 @@ const LyricPage = () => {
           <h3>{selectedSong.artist}</h3>
         </SongDetails>
         <LyricPageControls>
+          {/* YouTube Player */}
+          {videoId && (
+            <YouTubeContainer>
+              <YouTube
+                videoId={videoId}
+                opts={opts}
+                host="https://www.youtube-nocookie.com"
+                onReady={(event) => {
+                  playerRef.current = event.target;
+                  setPlayerReady(true);
+                }}
+                onStateChange={handlePlayerStateChange}
+                onError={handlePlayerError}
+              />
+              <PlayStopButton
+                onClick={isPlaying ? handleStop : handlePlay}
+                aria-label={isPlaying ? "Stop video" : "Play video"}
+                disabled={!playerReady}
+              >
+                {isPlaying ? <FaStop /> : <FaPlay />}
+              </PlayStopButton>
+            </YouTubeContainer>
+          )}
+
+          {/* Provide feedback if no video is available */}
+          {!videoId && <p>No video available for this song.</p>}
+
           {/* Random Button */}
           <RandomButton
             onClick={getRandomSong}
@@ -206,7 +313,9 @@ const LyricPage = () => {
         {renderLyrics(selectedSong.lyrics)}
       </LyricsContainer>
 
-      <DateAdded>Added on: {selectedSong.date_lyrics_added}</DateAdded>
+      <DateAdded>
+        Added on: {formatDate(selectedSong.date_lyrics_added)}
+      </DateAdded>
     </LyricPageContainer>
   );
 };

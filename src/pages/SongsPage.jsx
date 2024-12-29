@@ -53,7 +53,7 @@ const SongsPage = () => {
           )
         );
         // Navigate to LyricPage with selected song
-        navigate("/lyrics", {
+        navigate(`/lyrics/${song.id}`, {
           state: { selectedSong: { ...song, count: data.count } }, // Use data.count from the response
         });
       })

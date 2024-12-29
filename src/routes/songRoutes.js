@@ -78,6 +78,28 @@ const isValidURL = (url) => {
   }
 };
 
+// GET a song by ID
+router.get("/songs/:id", async (req, res) => {
+  try {
+    const songId = parseInt(req.params.id, 10);
+    if (isNaN(songId)) {
+      return res.status(400).json({ message: "Invalid song ID." });
+    }
+
+    const songs = await readSongs();
+    const song = songs.find((s) => s.id === songId);
+
+    if (song) {
+      res.json(song);
+    } else {
+      res.status(404).json({ message: "Song not found." });
+    }
+  } catch (err) {
+    console.error("Error in GET /songs/:id:", err);
+    res.status(500).json({ message: "Server error." });
+  }
+});
+
 // GET all songs
 router.get("/songs", async (req, res) => {
   try {

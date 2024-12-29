@@ -10,7 +10,7 @@ export const SearchBarContainer = styled.div`
   margin-bottom: 20px; /* Space below the search bar */
   position: relative; /* For positioning the clear button */
 
-  /* Optional: Limit the maximum width for better aesthetics */
+  /* Limit the maximum width for better aesthetics */
   max-width: 500px;
   margin-left: auto;
   margin-right: auto;
@@ -56,7 +56,7 @@ export const ClearButton = styled.button`
     color: #333;
   }
 
-  /* Optional: Increase clickable area */
+  /* Increase clickable area */
   width: 20px;
   height: 20px;
   display: flex;

@@ -7,6 +7,7 @@ import {
   StyledSearchInput,
   ClearButton,
 } from "./SearchBar.styled";
+import { FaTimes } from "react-icons/fa"; // Optional: Use a different icon if desired
 
 const SearchBar = ({
   placeholder,
@@ -51,7 +52,7 @@ const SearchBar = ({
       />
       {searchTerm && (
         <ClearButton onClick={handleClear} aria-label="Clear search input">
-          &#x2715; {/* Unicode character for '×' */}
+          <FaTimes size={12} />
         </ClearButton>
       )}
     </SearchBarContainer>
