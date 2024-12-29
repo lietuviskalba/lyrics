@@ -4,6 +4,7 @@ import fs from "fs/promises";
 import path from "path";
 import multer from "multer";
 import fetch from "node-fetch"; // Ensure node-fetch is installed
+import Joi from "joi"; // Install Joi using `npm install joi`
 
 const router = Router();
 const filePath = path.join(process.cwd(), "src", "data", "songs.json");
@@ -42,6 +43,22 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
 });
 
+// Define Joi schema for song validation
+const songSchema = Joi.object({
+  id: Joi.number().required(),
+  title: Joi.string().required(),
+  artist: Joi.string().required(),
+  lyrics: Joi.array().items(Joi.string().allow("")).required(), // Allow empty strings for stanza breaks
+  date_lyrics_added: Joi.string()
+    .pattern(/^\d{4}\/\d{2}\/\d{2}-\d{2}:\d{2}$/)
+    .required(), // Ensures format "YYYY/MM/DD-HH:MM"
+  isForeign: Joi.boolean().required(),
+  count: Joi.number().integer().min(0).required(),
+  image: Joi.string().required(),
+  url: Joi.string().uri().allow(null, ""),
+  urlStatus: Joi.string().valid("functional", "broken", "no-url").required(),
+});
+
 // Utility functions
 const readSongs = async () => {
   try {
@@ -49,7 +66,18 @@ const readSongs = async () => {
     if (data.trim() === "") {
       return [];
     }
-    return JSON.parse(data);
+    const songs = JSON.parse(data);
+
+    // Convert isForeign to boolean if it's a string
+    const convertedSongs = songs.map((song) => ({
+      ...song,
+      isForeign:
+        typeof song.isForeign === "string"
+          ? song.isForeign.toLowerCase() === "true"
+          : !!song.isForeign, // Ensure it's a boolean
+    }));
+
+    return convertedSongs;
   } catch (err) {
     if (err.code === "ENOENT") {
       // File doesn't exist, initialize as empty array
@@ -75,6 +103,13 @@ const isValidURL = (url) => {
   } catch (_) {
     return false;
   }
+};
+
+// Utility function to parse boolean from string
+const parseBoolean = (value) => {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "string") return value.toLowerCase() === "true";
+  return false;
 };
 
 // GET a song by ID
@@ -117,13 +152,17 @@ router.post("/save-song", upload.single("image"), async (req, res) => {
   try {
     const newSong = req.body;
 
+    // Convert isForeign to boolean
+    newSong.isForeign = parseBoolean(newSong.isForeign);
+
     // Validate required fields
     if (
       !newSong.id ||
       !newSong.title ||
       !newSong.artist ||
       !newSong.lyrics ||
-      !newSong.date_lyrics_added
+      !newSong.date_lyrics_added ||
+      newSong.isForeign === undefined
     ) {
       return res.status(400).json({ message: "Missing required song fields." });
     }
@@ -168,6 +207,15 @@ router.post("/save-song", upload.single("image"), async (req, res) => {
       newSong.lyrics = newSong.lyrics.split("\n").map((line) => line.trim());
     }
 
+    // Allow empty strings for stanza breaks (already allowed in Joi schema)
+    // No filtering here to preserve stanza breaks
+
+    // Validate the new song using Joi
+    const { error } = songSchema.validate(newSong);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
     const songs = await readSongs();
     songs.push(newSong);
     // Sort songs by id descending
@@ -197,12 +245,16 @@ router.put("/songs/:id", upload.single("image"), async (req, res) => {
     const songId = parseInt(req.params.id, 10);
     const updatedData = req.body;
 
+    // Convert isForeign to boolean
+    updatedData.isForeign = parseBoolean(updatedData.isForeign);
+
     // Validate required fields
     if (
       !updatedData.title ||
       !updatedData.artist ||
       !updatedData.lyrics ||
-      !updatedData.date_lyrics_added
+      !updatedData.date_lyrics_added ||
+      updatedData.isForeign === undefined
     ) {
       return res.status(400).json({ message: "Missing required song fields." });
     }
@@ -270,8 +322,19 @@ router.put("/songs/:id", upload.single("image"), async (req, res) => {
       typeof updatedData.lyrics === "string"
         ? updatedData.lyrics.split("\n").map((line) => line.trim())
         : updatedData.lyrics;
+
+    // Allow empty strings for stanza breaks (already allowed in Joi schema)
+    // No filtering here to preserve stanza breaks
+
     songToUpdate.date_lyrics_added = updatedData.date_lyrics_added;
     songToUpdate.count = parseInt(updatedData.count, 10) || songToUpdate.count;
+    songToUpdate.isForeign = updatedData.isForeign; // Already converted to boolean
+
+    // Validate the updated song using Joi
+    const { error } = songSchema.validate(songToUpdate);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
 
     // Save the updated songs list
     await writeSongs(songs);

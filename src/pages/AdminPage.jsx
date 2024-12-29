@@ -29,8 +29,8 @@ import {
   SongURLStatus,
   NoSongsMessage,
   OtherLanguageSection,
-  SuccessMessage, // Imported SuccessMessage
-  ErrorMessage, // Imported ErrorMessage
+  SuccessMessage,
+  ErrorMessage,
 } from "./AdminPage.styled";
 
 function AdminPage() {
@@ -204,14 +204,16 @@ function AdminPage() {
       }
     }
 
-    // 7. Collapse consecutive empty lines into a single one
+    // 7. Allow single empty lines for stanza breaks
     const lyrics = [];
     for (let i = 0; i < rawLyrics.length; i++) {
       const line = rawLyrics[i];
       if (line.trim() === "") {
+        // If the previous line was also empty, skip to prevent multiple empty lines
         if (lyrics.length === 0 || lyrics[lyrics.length - 1].trim() === "") {
           continue;
         }
+        // Add a single empty string to denote a stanza break
         lyrics.push("");
       } else {
         lyrics.push(line);
@@ -226,8 +228,12 @@ function AdminPage() {
           // Skip stanza breaks
           continue;
         }
-        // Check if the next two lines exist
-        if (i + 2 >= lyrics.length) {
+        // Check if the next two lines exist and are not empty
+        if (
+          i + 2 >= lyrics.length ||
+          lyrics[i + 1].trim() === "" ||
+          lyrics[i + 2].trim() === ""
+        ) {
           alert(
             `Incomplete lyrics structure at line ${
               i + 1
@@ -235,8 +241,8 @@ function AdminPage() {
           );
           return;
         }
-        // Optional: Further validation can be added here
-        i += 2; // Skip the next two lines as they are Romaji and Translation
+        // Move index to skip the next two lines
+        i += 2;
       }
     }
 
@@ -245,11 +251,11 @@ function AdminPage() {
       id,
       title,
       artist,
-      lyrics,
+      lyrics, // Use the processed lyrics with stanza breaks
       date_lyrics_added: formatDate(id), // Using the top-level formatDate
       isForeign: isOtherLanguage, // New flag as boolean
       count: 0, // Initialize count
-      image: imageFile ? `/images/${imageFile.name}` : "/images/default.jpg", // Adjust as needed
+      // image will be handled by multer; no manual assignment
     };
 
     if (url) {
@@ -267,7 +273,8 @@ function AdminPage() {
     formData.append("artist", newSong.artist);
     formData.append("lyrics", newSong.lyrics.join("\n"));
     formData.append("date_lyrics_added", newSong.date_lyrics_added);
-    formData.append("isForeign", newSong.isForeign); // Include the flag
+    formData.append("isForeign", newSong.isForeign.toString()); // Convert boolean to string
+
     formData.append("count", newSong.count);
 
     if (imageFile) {
@@ -368,14 +375,16 @@ function AdminPage() {
       }
     }
 
-    // 7. Collapse consecutive empty lines into a single one
+    // 7. Allow single empty lines for stanza breaks
     const lyrics = [];
     for (let i = 0; i < rawLyrics.length; i++) {
       const line = rawLyrics[i];
       if (line.trim() === "") {
+        // If the previous line was also empty, skip to prevent multiple empty lines
         if (lyrics.length === 0 || lyrics[lyrics.length - 1].trim() === "") {
           continue;
         }
+        // Add a single empty string to denote a stanza break
         lyrics.push("");
       } else {
         lyrics.push(line);
@@ -390,8 +399,12 @@ function AdminPage() {
           // Skip stanza breaks
           continue;
         }
-        // Check if the next two lines exist
-        if (i + 2 >= lyrics.length) {
+        // Check if the next two lines exist and are not empty
+        if (
+          i + 2 >= lyrics.length ||
+          lyrics[i + 1].trim() === "" ||
+          lyrics[i + 2].trim() === ""
+        ) {
           alert(
             `Incomplete lyrics structure at line ${
               i + 1
@@ -399,8 +412,8 @@ function AdminPage() {
           );
           return;
         }
-        // Optional: Further validation can be added here
-        i += 2; // Skip the next two lines as they are Romaji and Translation
+        // Move index to skip the next two lines
+        i += 2;
       }
     }
 
@@ -410,7 +423,7 @@ function AdminPage() {
     formData.append("artist", artist);
     formData.append("lyrics", lyrics.join("\n"));
     formData.append("date_lyrics_added", formatDate(Date.now())); // Using the top-level formatDate
-    formData.append("isForeign", isOtherLanguage); // Include the flag
+    formData.append("isForeign", isOtherLanguage.toString()); // Convert boolean to string
     formData.append("count", 0); // You may adjust this as needed
 
     if (imageFile) {
