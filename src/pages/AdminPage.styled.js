@@ -100,18 +100,25 @@ export const PasteInstruction = styled.p`
 export const AddSongButton = styled.button`
   margin-top: 10px;
   padding: 8px 12px;
-  background-color: #28a745; /* Green for Add */
+  background-color: ${(props) =>
+    props.editing
+      ? "#6c757d"
+      : props.theme.colors
+          .primary}; /* Use theme color for Add, grey for Cancel */
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 
   &:hover {
-    background-color: #218838;
+    background-color: ${(props) =>
+      props.editing
+        ? props.theme.colors.dangerHover
+        : props.theme.colors.hover};
   }
 `;
 
-// New Styled Component for Update Button
+// Styled component for Update Button
 export const UpdateButton = styled.button`
   margin-right: 10px; /* Space between buttons */
   padding: 5px 8px;
@@ -160,36 +167,20 @@ export const SongListTitle = styled.h2`
   color: ${(props) => props.theme.colors.text};
 `;
 
-// Container for the search bar
-export const SearchBar = styled.div`
-  display: flex;
-  align-items: center;
-  margin-left: 20px; /* Space between title and search bar */
-
-  @media (max-width: 768px) {
-    margin-left: 0;
-    margin-top: 10px;
-    width: 100%;
-  }
+// Styled component for Success Messages
+export const SuccessMessage = styled.p`
+  font-size: 1em;
+  color: ${(props) => props.theme.colors.success};
+  text-align: center;
+  margin-top: 10px;
 `;
 
-// Styled input for search
-export const SearchInput = styled.input`
-  padding: 8px 12px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 250px;
+// Styled component for Error Messages
+export const ErrorMessage = styled.p`
   font-size: 1em;
-  color: #333;
-
-  &:focus {
-    outline: none;
-    border-color: #007bff;
-  }
-
-  @media (max-width: 768px) {
-    width: 100%;
-  }
+  color: ${(props) => props.theme.colors.error};
+  text-align: center;
+  margin-top: 10px;
 `;
 
 export const SongList = styled.ol`
@@ -283,16 +274,14 @@ export const SongExtraInfo = styled.small`
 export const SongURLStatus = styled.div`
   margin-left: 10px;
   color: ${(props) => {
-    switch (
-      props.$status // Changed from props.status to props.$status
-    ) {
+    switch (props.$status) {
       case "functional":
-        return "#28a745"; // Green
+        return props.theme.colors.primary; // Green (from theme)
       case "broken":
-        return "#dc3545"; // Red
+        return props.theme.colors.error; // Red (from theme)
       case "no-url":
       default:
-        return "#6c757d"; // Gray
+        return props.theme.colors.secondaryText; // Gray (from theme)
     }
   }};
   font-size: 14px;
@@ -301,16 +290,14 @@ export const SongURLStatus = styled.div`
 
   a {
     color: ${(props) => {
-      switch (
-        props.$status // Changed from props.status to props.$status
-      ) {
+      switch (props.$status) {
         case "functional":
-          return "#28a745";
+          return props.theme.colors.primary;
         case "broken":
-          return "#dc3545";
+          return props.theme.colors.error;
         case "no-url":
         default:
-          return "#6c757d";
+          return props.theme.colors.secondaryText;
       }
     }};
     text-decoration: underline;
@@ -325,9 +312,10 @@ export const SongURLStatus = styled.div`
     margin-top: 10px;
   }
 `;
+
 export const NoSongsMessage = styled.p`
   font-size: 1em;
-  color: #ccc;
+  color: ${(props) => props.theme.colors.secondaryText};
   text-align: center;
   margin-top: 20px;
 `;

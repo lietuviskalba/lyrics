@@ -5,11 +5,20 @@ class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false, error: null };
+    this.ignoreErrors = [
+      /browser is not defined/,
+      /ERR_BLOCKED_BY_CLIENT/,
+      /adblock-yt-cs\.js/,
+      /generate_204/,
+      /youtubei\/v1\/log_event/,
+      /play\.google\.com\/log/,
+      // Add more patterns as needed
+    ];
   }
 
   static getDerivedStateFromError(error) {
     // Update state to display fallback UI
-    return { hasError: true, error };
+    return { hasError: true, error: error };
   }
 
   componentDidCatch(error, errorInfo) {
@@ -23,6 +32,9 @@ class ErrorBoundary extends React.Component {
     if (!shouldIgnore) {
       // Log the error or send it to an external service
       console.error("ErrorBoundary caught an error:", error, errorInfo);
+    } else {
+      // Optionally, you can log that an ignored error occurred
+      console.warn("Ignored error:", error.message);
     }
   }
 

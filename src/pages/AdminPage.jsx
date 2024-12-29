@@ -28,7 +28,9 @@ import {
   SongExtraInfo,
   SongURLStatus,
   NoSongsMessage,
-  OtherLanguageSection, // New Styled Component
+  OtherLanguageSection,
+  SuccessMessage, // Imported SuccessMessage
+  ErrorMessage, // Imported ErrorMessage
 } from "./AdminPage.styled";
 
 function AdminPage() {
@@ -36,7 +38,7 @@ function AdminPage() {
   const [textInput, setTextInput] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [error, setError] = useState("");
-  const [editingSongId, setEditingSongId] = useState(null); // New State for Editing
+  const [editingSongId, setEditingSongId] = useState(null); // State for Editing
 
   // Search term state
   const [adminSearchTerm, setAdminSearchTerm] = useState("");
@@ -46,7 +48,7 @@ function AdminPage() {
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
 
-  // New State for Other Language Checkbox
+  // State for Other Language Checkbox
   const [isOtherLanguage, setIsOtherLanguage] = useState(false);
 
   // Utility to format date
@@ -245,12 +247,17 @@ function AdminPage() {
       artist,
       lyrics,
       date_lyrics_added: formatDate(id), // Using the top-level formatDate
-      isForeign: isOtherLanguage, // New flag
-      // image will be handled separately
+      isForeign: isOtherLanguage, // New flag as boolean
+      count: 0, // Initialize count
+      image: imageFile ? `/images/${imageFile.name}` : "/images/default.jpg", // Adjust as needed
     };
 
     if (url) {
       newSong.url = url;
+      newSong.urlStatus = isValidURL(url) ? "functional" : "broken";
+    } else {
+      newSong.url = null;
+      newSong.urlStatus = "no-url";
     }
 
     // 10. Create FormData to include image and URL
@@ -261,7 +268,7 @@ function AdminPage() {
     formData.append("lyrics", newSong.lyrics.join("\n"));
     formData.append("date_lyrics_added", newSong.date_lyrics_added);
     formData.append("isForeign", newSong.isForeign); // Include the flag
-    formData.append("count", newSong.count || 0);
+    formData.append("count", newSong.count);
 
     if (imageFile) {
       formData.append("image", imageFile); // Field name must match multer's expectation
@@ -412,6 +419,10 @@ function AdminPage() {
 
     if (url) {
       formData.append("url", url);
+      formData.append("urlStatus", isValidURL(url) ? "functional" : "broken"); // Ensure urlStatus is updated
+    } else {
+      formData.append("url", null);
+      formData.append("urlStatus", "no-url");
     }
 
     // Debugging logs
@@ -489,8 +500,9 @@ function AdminPage() {
       {/* Top-left corner title */}
       <AdminTitle>Admin Page</AdminTitle>
 
-      {error && <p className="error-message">Error: {error}</p>}
-      {successMessage && <p className="success-message">{successMessage}</p>}
+      {/* Display Error and Success Messages */}
+      {error && <ErrorMessage>Error: {error}</ErrorMessage>}
+      {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
 
       <AdminContainer>
         {/* Left Section: Add/Update Song */}
@@ -597,7 +609,9 @@ function AdminPage() {
           </SongListTitleWrapper>
           <div aria-live="polite">
             {filteredSongs.length === 0 ? (
-              <NoSongsMessage>No songs found.</NoSongsMessage>
+              <NoSongsMessage>
+                {songs.length === 0 ? "No songs available." : "No songs found."}
+              </NoSongsMessage>
             ) : (
               <SongList>
                 {filteredSongs.map((song) => (

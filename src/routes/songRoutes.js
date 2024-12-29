@@ -1,117 +1,5 @@
 // src/routes/songRoutes.js
-import { Router } from "express";
-import fs from "fs/promises";
-import path from "path";
-import multer from "multer";
-// Uncomment the following line if using Node.js < 18
-// import fetch from 'node-fetch';
-
-const router = Router();
-const filePath = path.join(process.cwd(), "src", "data", "songs.json");
-
-// Configure storage for uploaded images
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const imagesPath = path.join(process.cwd(), "src", "public", "images");
-    cb(null, imagesPath); // Ensure this directory exists
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, uniqueSuffix + ext);
-  },
-});
-
-// Filter to accept only image files
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|gif/;
-  const mimeType = allowedTypes.test(file.mimetype);
-  const extname = allowedTypes.test(
-    path.extname(file.originalname).toLowerCase()
-  );
-
-  if (mimeType && extname) {
-    return cb(null, true);
-  }
-  cb(new Error("Only image files are allowed!"));
-};
-
-// Initialize multer
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB limit
-});
-
-// Utility functions
-const readSongs = async () => {
-  try {
-    const data = await fs.readFile(filePath, "utf8");
-    if (data.trim() === "") {
-      return [];
-    }
-    return JSON.parse(data);
-  } catch (err) {
-    if (err.code === "ENOENT") {
-      // File doesn't exist, initialize as empty array
-      return [];
-    }
-    throw err;
-  }
-};
-
-const writeSongs = async (songs) => {
-  try {
-    await fs.writeFile(filePath, JSON.stringify(songs, null, 2), "utf8");
-  } catch (err) {
-    throw err;
-  }
-};
-
-// Utility function to validate URLs
-const isValidURL = (url) => {
-  try {
-    new URL(url);
-    return true;
-  } catch (_) {
-    return false;
-  }
-};
-
-// GET a song by ID
-router.get("/songs/:id", async (req, res) => {
-  try {
-    const songId = parseInt(req.params.id, 10);
-    if (isNaN(songId)) {
-      return res.status(400).json({ message: "Invalid song ID." });
-    }
-
-    const songs = await readSongs();
-    const song = songs.find((s) => s.id === songId);
-
-    if (song) {
-      res.json(song);
-    } else {
-      res.status(404).json({ message: "Song not found." });
-    }
-  } catch (err) {
-    console.error("Error in GET /songs/:id:", err);
-    res.status(500).json({ message: "Server error." });
-  }
-});
-
-// GET all songs
-router.get("/songs", async (req, res) => {
-  try {
-    const songs = await readSongs();
-    // Sort by id descending
-    songs.sort((a, b) => b.id - a.id);
-    res.json(songs);
-  } catch (err) {
-    console.error("Error in GET /songs:", err);
-    res.status(500).json({ message: "Error reading songs data" });
-  }
-});
+// ... existing imports and setup
 
 // POST save-song with image upload
 router.post("/save-song", upload.single("image"), async (req, res) => {
@@ -128,6 +16,9 @@ router.post("/save-song", upload.single("image"), async (req, res) => {
     ) {
       return res.status(400).json({ message: "Missing required song fields." });
     }
+
+    // Convert isForeign from string to boolean
+    newSong.isForeign = newSong.isForeign === "true";
 
     // Handle image
     if (req.file) {
@@ -274,6 +165,9 @@ router.put("/songs/:id", upload.single("image"), async (req, res) => {
     songToUpdate.date_lyrics_added = updatedData.date_lyrics_added;
     songToUpdate.count = parseInt(updatedData.count, 10) || songToUpdate.count;
 
+    // Convert isForeign from string to boolean
+    songToUpdate.isForeign = updatedData.isForeign === "true";
+
     // Save the updated songs list
     await writeSongs(songs);
 
@@ -293,67 +187,3 @@ router.put("/songs/:id", upload.single("image"), async (req, res) => {
     }
   }
 });
-
-// DELETE a song
-router.delete("/songs/:id", async (req, res) => {
-  const songId = parseInt(req.params.id, 10);
-  try {
-    const songs = await readSongs();
-    const songIndex = songs.findIndex((song) => song.id === songId);
-
-    if (songIndex === -1) {
-      return res.status(404).send("Song not found.");
-    }
-
-    const [deletedSong] = songs.splice(songIndex, 1);
-
-    // Delete the image if it's not the default image
-    if (deletedSong.image && deletedSong.image !== "/images/default.jpg") {
-      const imagePath = path.join(
-        process.cwd(),
-        "src",
-        "public",
-        deletedSong.image
-      );
-      try {
-        await fs.unlink(imagePath);
-        console.log(`Deleted image: ${imagePath}`);
-      } catch (err) {
-        console.error(`Error deleting image: ${err}`);
-        // Proceed even if deleting fails
-      }
-    }
-
-    await writeSongs(songs);
-    res.status(200).send("Song deleted successfully!");
-  } catch (err) {
-    console.error(`Error in DELETE /songs/${songId}:`, err);
-    res.status(500).send("Error deleting song.");
-  }
-});
-
-// POST increment count for a song
-router.post("/songs/:id/increment", async (req, res) => {
-  const songId = parseInt(req.params.id, 10);
-  try {
-    const songs = await readSongs();
-    const songIndex = songs.findIndex((s) => s.id === songId);
-    if (songIndex !== -1) {
-      // Ensure the 'count' property exists and is a number
-      if (typeof songs[songIndex].count === "number") {
-        songs[songIndex].count += 1;
-      } else {
-        songs[songIndex].count = 1; // Initialize if undefined or not a number
-      }
-      await writeSongs(songs);
-      res.json({ message: "Count incremented", count: songs[songIndex].count });
-    } else {
-      res.status(404).json({ message: "Song not found" });
-    }
-  } catch (err) {
-    console.error("Error in POST /songs/:id/increment:", err);
-    res.status(500).json({ message: "Error updating song count" });
-  }
-});
-
-export default router;

@@ -9,7 +9,7 @@ import {
   CheckboxContainer,
   CheckboxLabel,
   CheckboxInput,
-  VerticalSeparator, // New styled component
+  VerticalSeparator,
   SongList,
   SongItem,
   SongBox,

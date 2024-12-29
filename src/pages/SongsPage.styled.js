@@ -6,7 +6,7 @@ export const SongsPageContainer = styled.div`
   padding: 10px 20px 20px 20px; /* Top, Right, Bottom, Left */
   font-family: Arial, sans-serif;
   color: #333;
-  background-color: ${(props) => props.theme.colors.background};
+  background-color: ${(props) => props.theme.colors.songsPageBackground};
 `;
 
 // Title for the Songs Page
@@ -30,6 +30,7 @@ export const ControlsContainer = styled.div`
   @media (max-width: 768px) {
     flex-direction: column; /* Stack controls vertically on small screens */
     gap: 10px;
+    max-width: 100%; /* Full width on small screens */
   }
 `;
 
@@ -58,12 +59,12 @@ export const CheckboxLabel = styled.label`
 export const VerticalSeparator = styled.div`
   width: 1px; /* Thin vertical line */
   height: 24px; /* Height to match the search bar and checkbox */
-  background-color: #ccc; /* Light grey color */
+  background-color: ${(props) => props.theme.colors.separator};
 
   @media (max-width: 768px) {
     width: 80%; /* Reduce width on small screens */
     height: 1px; /* Change to horizontal line */
-    background-color: #ccc;
+    background-color: ${(props) => props.theme.colors.separator};
   }
 `;
 
@@ -166,7 +167,8 @@ export const SongImage = styled.div`
 // Styled component for "No songs found" message
 export const NoSongsMessage = styled.p`
   font-size: 1em;
-  color: #ccc;
+  color: ${(props) =>
+    props.theme.colors.error}; /* Use error color for better visibility */
   text-align: center;
   margin-top: 20px;
 `;
