@@ -9,7 +9,9 @@ import {
   FaStop,
   FaChevronLeft,
   FaChevronRight,
-  FaArrowUp, // Added Icon for Return to Top
+  FaArrowUp,
+  FaCompress,
+  FaExpand, // Imported Icons for Shrink Button
 } from "react-icons/fa";
 import YouTube from "react-youtube";
 import {
@@ -27,13 +29,14 @@ import {
   DateAdded,
   YouTubeContainer,
   PlayStopButton,
-  LyricLine, // Added LyricLine
+  LyricLine,
   RomajiLine,
   TranslationLine,
   ControlsBox,
   CollapseButton,
-  ReturnToTopButton, // Added ReturnToTopButton
-  BottomReturnToTopButton, // Added BottomReturnToTopButton
+  ReturnToTopButton,
+  BottomReturnToTopButton,
+  ShrinkButton, // Added ShrinkButton
 } from "./LyricPage.styled";
 
 const LyricPage = () => {
@@ -56,6 +59,10 @@ const LyricPage = () => {
   const [playerError, setPlayerError] = useState(false); // State to track player errors
   const [isCollapsed, setIsCollapsed] = useState(false); // State to track ControlsBox collapse
   const [showBottomButton, setShowBottomButton] = useState(false); // State to track bottom button visibility
+  const [isCompact, setIsCompact] = useState(() => {
+    const saved = localStorage.getItem("isCompact");
+    return saved ? JSON.parse(saved) : false;
+  }); // State to track compact layout
 
   // **Ref Hook**
   const playerRef = useRef(null);
@@ -68,6 +75,10 @@ const LyricPage = () => {
   useEffect(() => {
     localStorage.setItem("textSize", textSize);
   }, [textSize]);
+
+  useEffect(() => {
+    localStorage.setItem("isCompact", isCompact);
+  }, [isCompact]);
 
   useEffect(() => {
     // Fetch all songs to populate the songs list for random selection
@@ -130,6 +141,10 @@ const LyricPage = () => {
 
   const toggleControlsBox = () => {
     setIsCollapsed((prev) => !prev);
+  };
+
+  const toggleCompact = () => {
+    setIsCompact((prev) => !prev);
   };
 
   // **YouTube Video ID Extraction**
@@ -255,7 +270,7 @@ const LyricPage = () => {
 
     return stanzas.map((stanza, index) => (
       <React.Fragment key={index}>
-        <Stanza>
+        <Stanza isCompact={isCompact}>
           {selectedSong.isForeign
             ? // Handle "Foreign language" songs with Lyric, Romaji, and Translation
               stanza.map((line, idx) => {
@@ -333,6 +348,7 @@ const LyricPage = () => {
               }}
               onStateChange={handlePlayerStateChange}
               onError={handlePlayerError}
+              loading="lazy" // Added lazy loading for performance
             />
           )}
         </YouTubeContainer>
@@ -390,6 +406,14 @@ const LyricPage = () => {
               />
             </TextSizeControl>
 
+            {/* Shrink Button */}
+            <ShrinkButton
+              onClick={toggleCompact}
+              aria-label="Toggle Compact Layout"
+            >
+              {isCompact ? <FaExpand /> : <FaCompress />}
+            </ShrinkButton>
+
             {/* Return to Top Button in Controls Box */}
             <ReturnToTopButton onClick={scrollToTop} aria-label="Return to Top">
               <FaArrowUp />
@@ -402,6 +426,7 @@ const LyricPage = () => {
       <LyricsContainer
         className={`columns-${columnCount}`}
         $textSize={textSize}
+        isCompact={isCompact}
       >
         {renderLyrics(selectedSong.lyrics)}
       </LyricsContainer>
@@ -413,7 +438,7 @@ const LyricPage = () => {
           aria-label="Return to Top"
         >
           <FaArrowUp />
-          {/* You can add text here if desired */}
+          <span>Return to Top</span> {/* Optional text */}
         </BottomReturnToTopButton>
       )}
 

@@ -2,10 +2,10 @@
 export const theme = {
   colors: {
     background: "#f0f0f0",
-    primary: "#ffffff", // White text
+    primary: "rgb(191, 185, 185)", // White text
     secondary: "#ff4d4d",
-    text: "#ffffff",
-    secondaryText: "#b2b2b2",
+    text: "rgb(118, 117, 117)",
+    secondaryText: "rgb(108, 103, 103)",
     romaji: "rgb(118, 117, 117)", // Slightly darker for Romaji
     translation: "rgb(103, 103, 103)", // Even darker for Translation
     hover: "#0056b3",

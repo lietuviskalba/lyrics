@@ -1,6 +1,12 @@
 // src/pages/LyricPage.styled.js
 import styled, { css } from "styled-components";
-import { FaChevronLeft, FaChevronRight, FaArrowUp } from "react-icons/fa";
+import {
+  FaChevronLeft,
+  FaChevronRight,
+  FaArrowUp,
+  FaCompress,
+  FaExpand,
+} from "react-icons/fa";
 
 // Container for the Lyric Page
 export const LyricPageContainer = styled.div`
@@ -92,7 +98,7 @@ export const ControlsBox = styled.div`
     top: auto;
     bottom: 20px;
     right: 50%;
-    transform: translateX(50%);
+    transform: translateX(-50%);
     flex-direction: row;
     gap: 15px;
     width: ${(props) => (props.isCollapsed ? "50px" : "90%")};
@@ -241,19 +247,24 @@ export const TextSizeSlider = styled.input`
 // Container for Lyrics with Enhanced Transitions
 export const LyricsContainer = styled.div`
   margin-top: 40px;
-  line-height: 1.8;
+  line-height: ${(props) =>
+    props.isCompact ? "1.2" : "1.8"}; /* Reduced line-height in compact mode */
   transition: all 0.5s ease-in-out; /* Increased transition duration for smoothness */
   font-size: ${(props) => props.$textSize}px;
   color: rgb(212, 210, 210);
+  padding: ${(props) =>
+    props.isCompact ? "10px" : "20px"}; /* Adjust padding based on isCompact */
 
   &.columns-1 {
     column-count: 1;
-    column-gap: 20px;
+    column-gap: ${(props) =>
+      props.isCompact ? "10px" : "20px"}; /* Adjust gap */
   }
 
   &.columns-2 {
     column-count: 2;
-    column-gap: 40px;
+    column-gap: ${(props) =>
+      props.isCompact ? "20px" : "40px"}; /* Adjust gap */
     position: relative;
 
     &::before {
@@ -278,7 +289,8 @@ export const LyricsContainer = styled.div`
 
     &.columns-2 {
       column-count: 1; /* Revert to single column on small screens */
-      column-gap: 20px;
+      column-gap: ${(props) =>
+        props.isCompact ? "10px" : "20px"}; /* Adjust gap */
     }
   }
 
@@ -295,8 +307,10 @@ export const LyricsContainer = styled.div`
 
 // Individual Stanza with Rectangle Bubble Styling
 export const Stanza = styled.div`
-  margin-bottom: 20px;
-  padding: 20px;
+  margin-bottom: ${(props) =>
+    props.isCompact ? "10px" : "20px"}; /* Adjust margin */
+  padding: ${(props) =>
+    props.isCompact ? "10px" : "20px"}; /* Adjust padding */
   background-color: rgba(
     255,
     255,
@@ -306,13 +320,19 @@ export const Stanza = styled.div`
   border: 2px solid #444; /* Thicker dark border for contrast */
   border-radius: 12px;
   box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
+
+  /* Reduce margins between lines */
+  & > p {
+    margin: ${(props) => (props.isCompact ? "2px 0" : "5px 0")};
+  }
 `;
 
 // Separator between Stanzas (Removed to eliminate unwanted horizontal lines within bubbles)
 export const StanzaSeparator = styled.hr`
   border: none;
   border-top: 1px solid #ccc;
-  margin: 10px 0;
+  margin: ${(props) =>
+    props.isCompact ? "5px 0" : "10px 0"}; /* Reduced margin in compact mode */
 `;
 
 // Date Added Information
@@ -326,22 +346,36 @@ export const DateAdded = styled.p`
 // **Styled Components for Lyrics**
 
 export const LyricLine = styled.p`
-  margin: 5px 0;
+  margin: ${(props) =>
+    props.isCompact ? "2px 0" : "5px 0"}; /* Reduced margin in compact mode */
   color: ${(props) => props.theme.colors.lyric}; /* Brightest color */
-  font-size: 1.5em; /* Largest font size */
+  font-size: ${(props) =>
+    props.isCompact
+      ? "1.3em"
+      : "1.5em"}; /* Slightly smaller font size in compact mode */
   font-weight: bold;
 `;
 
 export const RomajiLine = styled.p`
-  margin: 3px 0;
+  margin: ${(props) =>
+    props.isCompact ? "1px 0" : "3px 0"}; /* Reduced margin in compact mode */
   color: ${(props) => props.theme.colors.romaji}; /* Less bright color */
-  font-size: 1.2em; /* Medium font size */
+  font-size: ${(props) =>
+    props.isCompact
+      ? "1em"
+      : "1.2em"}; /* Slightly smaller font size in compact mode */
 `;
 
 export const TranslationLine = styled.p`
-  margin: 3px 0 8px 0;
+  margin: ${(props) =>
+    props.isCompact
+      ? "1px 0 4px 0"
+      : "3px 0 8px 0"}; /* Reduced margin in compact mode */
   color: ${(props) => props.theme.colors.translation}; /* Least bright color */
-  font-size: 1em; /* Smallest font size */
+  font-size: ${(props) =>
+    props.isCompact
+      ? "0.9em"
+      : "1em"}; /* Slightly smaller font size in compact mode */
 `;
 
 // **Return to Top Button Inside Controls Box**
@@ -405,5 +439,37 @@ export const BottomReturnToTopButton = styled.button`
     padding: 10px 20px;
     font-size: 1em;
     bottom: 15px;
+  }
+
+  span {
+    margin-left: 8px; /* Spacing between icon and text */
+  }
+`;
+
+// **Shrink Button**
+export const ShrinkButton = styled.button`
+  background-color: #1a1a1a;
+  color: white;
+  border: none;
+  padding: 8px 12px; /* Adjusted padding for rectangular shape */
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1.2em;
+  transition: background-color 0.3s, transform 0.2s;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: #333;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  @media (max-width: 768px) {
+    width: auto;
   }
 `;
